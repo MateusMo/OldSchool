@@ -30,8 +30,6 @@ packages/
 # ASP.NET specific files
 *.db
 *.db-journal
-appsettings.Development.json
-appsettings.*.json
 
 # Publish output
 publish/
