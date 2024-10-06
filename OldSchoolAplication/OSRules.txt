@@ -1,0 +1,35 @@
+Command Language Overview
+This class library is designed to receive commands from the interface and execute the corresponding actions.
+
+The commands are classified as follows:
+
+Commands
+CREATE
+READ
+UPDATE
+DELETE
+
+Command Complements
+CREATE: WITH / AND
+READ: None
+UPDATE: SET AND
+DELETE: None
+
+Entities
+USER
+POST
+COMMENT
+
+Entity Properties
+User
+Nickname
+Password
+Union
+UNION: (Define the context in which UNION is used)
+
+Examples:
+CREATE USER WITH NICKNAME 'MATEUS' PASSWORD 'TESTE'
+READ USER WITH ID 1 OR READ USER WITH ID 1 2 3 4
+UPDATE COMMENT WITH ID 2 SET CONTENT 'NOVO CONTENT'
+DELETE ME OR UPDATE ME SET NICKNAME 'NOVO NICKNAME'
+DELETE COMMENT WITH ID 3 --only for comment from user
