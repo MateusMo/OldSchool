@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace OldSchoolAplication.Dto
 {
-    public class ResponseOsDto
+    public class ResponseDto
     {
-        public string Message { get; set; }
+        public string[] Messages { get; set; }
+        public string[] Errors { get; set; }
     }
 }

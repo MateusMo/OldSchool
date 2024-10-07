@@ -6,5 +6,6 @@ namespace OldSchoolInfrastructure.Repository
 {
     public interface IUserRepository : IGenericRepository<UserDomain>
     {
+
     }
 }

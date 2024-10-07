@@ -9,6 +9,6 @@ namespace OldSchoolAplication.Services
 {
     public interface ICommandService
     {
-        public Task<string> ExecuteCommand(ProcessDtoService process);
+        public Task<ResponseDto> ExecuteCommand(ProcessDtoService process);
     }
 }
