@@ -10,5 +10,6 @@ namespace OldSchoolAplication.Services
     public interface ICommandService
     {
         public Task<ResponseDto> ExecuteCommand(ProcessDtoService process);
+        public Task<ResponseDto> ExecuteAnonymous(AnonynmousDtoService anonymous);
     }
 }

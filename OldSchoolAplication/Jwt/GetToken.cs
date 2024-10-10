@@ -11,19 +11,19 @@ namespace OldSchoolAplication.Jwt
 {
     public class GetToken : IGetToken
     {
-        private readonly IUserRepository _userRepo;
         private readonly string _secretKey;
+        private readonly string _issuer; 
+        private readonly string _audience; 
 
-        public GetToken(IUserRepository userRepo, string secretKey)
+        public GetToken( string secretKey,string issuer, string audience)
         {
-            _userRepo = userRepo;
-            _secretKey = secretKey; // Chave secreta para assinar o token JWT
+            _secretKey = secretKey; 
+            _issuer = issuer;
+            _audience = audience;
         }
 
         public async Task<string> GenerateToken(UserDomain user)
         {
-
-            // Criar o token JWT
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_secretKey);
 
@@ -31,15 +31,17 @@ namespace OldSchoolAplication.Jwt
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, user.Nickname), // Adicionando o nickname como claim
-                    new Claim(ClaimTypes.Role, "User")     // Você pode adicionar mais claims, como o papel do usuário
+                    new Claim(ClaimTypes.Name, user.Nickname),
+                    new Claim(ClaimTypes.Role, "User")     
                 }),
-                Expires = DateTime.UtcNow.AddHours(1), // O token expira em 1 hora
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                Expires = DateTime.UtcNow.AddHours(1), 
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+                Issuer = _issuer, 
+                Audience = _audience 
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token); // Retorna o token como string
+            return tokenHandler.WriteToken(token); 
         }
     }
 }

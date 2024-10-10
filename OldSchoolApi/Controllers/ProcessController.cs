@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OldSchoolApi.DTO;
 using OldSchoolAplication.Services;
 
@@ -13,7 +14,7 @@ namespace OldSchoolApi.Controllers
             _commandService = commandService;
         }
 
-        [HttpPost]
+        [HttpPost("-.-./---/--/--/.-/-./-.."),Authorize]
         public async Task<IActionResult> ProcessCommand([FromBody]ProcessDtoController process)
         {
             try
@@ -26,5 +27,20 @@ namespace OldSchoolApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost(".-/-./---/-./-.--/--/---/..-/..."), AllowAnonymous]
+        public async Task<IActionResult> AnonymousCommands([FromBody] AnonymousDto anonymous)
+        {
+            try
+            {
+                var result = await _commandService.ExecuteAnonymous(AnonymousDto.ToAnonymousDtoService(anonymous));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }

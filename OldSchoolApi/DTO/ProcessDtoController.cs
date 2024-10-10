@@ -11,7 +11,7 @@ namespace OldSchoolApi.DTO
             return new ProcessDtoService()
             {
                 Content = process.Content,
-                UserId = process.UserId
+                UserId = process.UserId 
             };
         }
     }

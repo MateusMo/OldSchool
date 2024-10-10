@@ -2,6 +2,7 @@
 using OldSchoolAplication.Enum;
 using OldSchoolAplication.Jwt;
 using OldSchoolInfrastructure.Repository;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 
@@ -24,7 +25,54 @@ namespace OldSchoolAplication.Services
             _syntaxTranslator = new SyntaxTranslator();
         }
 
-        public async Task<ResponseDto> ExecuteCommand(ProcessDtoService process) 
+        public async Task<ResponseDto> ExecuteAnonymous(AnonynmousDtoService anonymous)
+        {
+            var commandParts = SplitCommand(anonymous.Content.ToUpper());
+            if (commandParts.Length == 0)
+                return new ResponseDto()
+                {
+                    Errors = ["Empty Input."]
+                };
+
+            var context = _syntaxTranslator.IdentifyContext(commandParts);
+            switch (context)
+            {
+                case CommandContextEnum.Login:
+                    var userLogin = await _userService
+                        .FindAsync(x => x.Nickname == commandParts[6] && x.PasswordHash == commandParts[8])
+                        ;
+                    if (userLogin == null || userLogin.Count() == 0)
+                    {
+                        return new ResponseDto()
+                        {
+                            Errors = ["You can't, sorry =( Your credentials are wrong"]
+                        };
+                    }
+                    var tokenReturn = await _getToken.GenerateToken(userLogin.First());
+                    return new ResponseDto()
+                    {
+                        Messages = [userLogin.First().Id.ToString(), tokenReturn]
+                    };
+                case CommandContextEnum.CreateUser:
+                    var createdUser = await _userService.AddAsync(UserDto.CommandAddToDomain(commandParts));
+                    return new ResponseDto()
+                    {
+                        Messages = ["User created"]
+                    };
+                case CommandContextEnum.CommandNotFound:
+                    return new ResponseDto()
+                    {
+                        Errors = ["Command not found."]
+                    };
+                default:
+                    return new ResponseDto()
+                    {
+                        Errors = ["Command not found."]
+                    };
+            }
+        }
+
+        public async Task<ResponseDto> ExecuteCommand(ProcessDtoService process)
         {
             UpdateProcessDto(process);
             var commandParts = SplitCommand(process.Content.ToUpper());
@@ -40,22 +88,6 @@ namespace OldSchoolAplication.Services
 
             switch (context)
             {
-                case CommandContextEnum.Login:
-                    var userLogin = await _userService
-                        .FindAsync(x => x.Nickname == commandParts[6] && x.PasswordHash == commandParts[8])
-                        ;
-                    if(userLogin == null || userLogin.Count() == 0)
-                    {
-                        return new ResponseDto()
-                        {
-                            Errors = ["You can't, sorry =( Your credentials are wrong"]
-                        };
-                    }
-                    var tokenReturn = await _getToken.GenerateToken(userLogin.First());
-                    return new ResponseDto()
-                    {
-                        Messages = [userLogin.First().Id.ToString(), tokenReturn]
-                    };
 
                 case CommandContextEnum.CurrentUserWantToDeleteAccount:
                     await _userService.DeleteAsync(_processDtoService.UserId);
@@ -84,7 +116,7 @@ namespace OldSchoolAplication.Services
                     return new ResponseDto()
                     {
                         Messages = ["Comment or Comments Deleted"]
-                    }; 
+                    };
 
                 case CommandContextEnum.CurrentUserWantToUpdateAccount:
                     var user = await _userService.GetByIdAsync(process.UserId);
@@ -96,31 +128,26 @@ namespace OldSchoolAplication.Services
                     };
 
                 case CommandContextEnum.CurrentUserWantToUpdatePost:
-                     await _postService
-                        .UpdateAsync(PostDto
-                        .CommandUpdateToDomain(await _postService
-                        .GetByIdAsync(_processDtoService.UserId), commandParts));
+                    await _postService
+                       .UpdateAsync(PostDto
+                       .CommandUpdateToDomain(await _postService
+                       .GetByIdAsync(_processDtoService.UserId), commandParts));
 
-                    return new ResponseDto() 
-                    { 
+                    return new ResponseDto()
+                    {
                         Messages = ["Post Successfully Updated."]
                     };
                 case CommandContextEnum.CurrentUserWantToUpdateComment:
                     var commandIDs = CommentDto.GetCommentId(commandParts);
                     var comment = await _commentService.GetByIdAsync(commandIDs);
-                    await _commentService.UpdateAsync(CommentDto.CommandUpdateToDomain(comment,commandParts));
+                    await _commentService.UpdateAsync(CommentDto.CommandUpdateToDomain(comment, commandParts));
                     return new ResponseDto()
                     {
                         Messages = ["Comment Updated"]
                     };
-                case CommandContextEnum.CreateUser:
-                    var createdUser = await _userService.AddAsync(UserDto.CommandAddToDomain(commandParts));
-                    return new ResponseDto()
-                    {
-                        Messages = ["User created"]
-                    };
+
                 case CommandContextEnum.CreatePost:
-                    var post = await _postService.AddAsync(PostDto.CommandAddToDomain(commandParts,_processDtoService.UserId));
+                    var post = await _postService.AddAsync(PostDto.CommandAddToDomain(commandParts, _processDtoService.UserId));
                     return new ResponseDto()
                     {
                         Messages = [$"Post Successfully Created. Id: {post.Id}"]
@@ -151,7 +178,7 @@ namespace OldSchoolAplication.Services
                     var idsPost = PostDto.CommandReadToDomain(commandParts);
                     var postsFromDatabase = await _postService.FindAsync(x => idsPost.Contains(x.Id));
                     List<string> formatedPosts = new();
-                   
+
                     foreach (var item in postsFromDatabase)
                     {
                         if (item.Links == null)
@@ -163,7 +190,7 @@ namespace OldSchoolAplication.Services
                         if (item.ASCII == null)
                             item.ASCII = "--";
 
-                        formatedPosts.Add($"ID: {item.Id}, Content: {item.Content}, ASCII: {item.ASCII}, Created At: {item.CreatedAt}, Links: {item.Links}, Keywords: {item.KeyWords}");
+                        formatedPosts.Add($"ID: {item.Id}, Likes: {item.Likes}, Content: {item.Content}, Created At: {item.CreatedAt}, Links: {item.Links}, Keywords: {item.KeyWords}, ASCII: {item.ASCII}");
                     }
                     return new ResponseDto()
                     {
@@ -195,13 +222,13 @@ namespace OldSchoolAplication.Services
                     }
                     foreach (var item in posts)
                     {
-                       await _postService.UpdateAsync(item);
+                        await _postService.UpdateAsync(item);
                     }
                     return new ResponseDto()
-                    { 
+                    {
                         Messages = ["Like Added"]
                     };
-                
+
                 case CommandContextEnum.CommandNotFound:
                     return new ResponseDto()
                     {
@@ -229,7 +256,7 @@ namespace OldSchoolAplication.Services
             string[] result = new string[matches.Count];
             for (int i = 0; i < matches.Count; i++)
             {
-                result[i] = matches[i].Value.Replace("'","");
+                result[i] = matches[i].Value.Replace("'", "");
             }
 
             return result;
