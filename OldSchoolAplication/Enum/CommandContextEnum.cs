@@ -8,6 +8,8 @@ namespace OldSchoolAplication.Enum
 {
     public enum CommandContextEnum
     {
+        Login = 15,
+
         CurrentUserWantToDeleteAccount = 1,
         CurrentUserWantToDeleteHisPost = 2,
         CurrentUserWantToDeleteHisComment = 3,

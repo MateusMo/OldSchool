@@ -9,6 +9,8 @@ namespace OldSchoolAplication
 {
     public class Syntax
     {
+        public string[] Login { get; set; }
+
         public string[] CreateUser { get; set; }
         public string[] DeleteUser { get; set; }
         public string[] ReadUser { get; set; }
@@ -29,24 +31,27 @@ namespace OldSchoolAplication
         {
             var syntax = new Syntax()
             {
+                //Login basic syntax
+                Login = ["MAY", "I","COME","IN","?","NICKNAME","","PASSWORD",""],
+
                 //User basic syntax
                 CreateUser = ["CREATE", "USER", "NICKNAME", "", "PASSWORD", ""],
                 DeleteUser = ["DELETE", "ME"],
-                ReadUser = ["READ", "USER", "WITH", "ID", ""],
-                UpdateUser = ["UPDATE", "ME", "SET", "NICKNAME", "", "PASSWORD", ""],
+                ReadUser = ["READ", "USER", "ID", ""],
+                UpdateUser = ["UPDATE", "ME", "NICKNAME", "", "PASSWORD", ""],
 
                 //Post basic syntax
                 CreatePost = ["CREATE", "POST", "CONTENT", "", "ASCII", "", "KEYWORDS", "", "LINKS", ""],
-                DeletePost = ["DELETE", "MY", "POST", "WITH", "ID", ""],
-                ReadPost = ["READ", "POST", "WITH", "ID", ""],
-                UpdatePost = ["UPDATE", "MY", "POST", "WITH", "ID", "", "CONTENT", "", "ASCII", "", "KEYWORDS", "", "LINKS", ""],
-                LikePost = ["LIKE", "POST", "WITH", "ID", ""],
+                DeletePost = ["DELETE", "POST", "ID", ""],
+                ReadPost = ["READ", "POST", "ID", ""],
+                UpdatePost = ["UPDATE", "POST", "ID", "", "CONTENT", "", "ASCII", "", "KEYWORDS", "", "LINKS", ""],
+                LikePost = ["LIKE", "POST", "ID", ""],
 
                 //Comment basic syntax
-                CreateComment = ["CREATE", "COMMENT", "ON", "POST", "", "CONTENT", ""],
-                DeleteComment = ["DELETE", "MY", "COMMENT", "ON", "POST", ""],
-                ReadComment = ["READ", "COMMENT", "ON", "POST", "", "DATE", "", "TOP", ""],
-                UpdateComment = ["UPDATE", "MY", "COMMENT", "ON", "POST", ""],
+                CreateComment = ["CREATE", "COMMENT", "CONTENT", "", "POST", ""],
+                DeleteComment = ["DELETE", "COMMENT", "ID", ""],
+                ReadComment = ["READ", "COMMENT", "POST", "", "DATE", "", "TOP", ""],
+                UpdateComment = ["UPDATE", "COMMENT", "ID", "", "CONTENT", ""],
             };
 
             return syntax;

@@ -1,4 +1,5 @@
 ﻿using OldSchoolDomain.Domain;
+using OldSchoolInfrastructure.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,34 +11,39 @@ namespace OldSchoolAplication.Services
 {
     public class PostService : IPostService
     {
-        public Task<PostDomain> AddAsync(PostDomain entity)
+        private readonly IPostRepository _postRepository;
+        public PostService(IPostRepository postRepository)
         {
-            throw new NotImplementedException();
+            _postRepository = postRepository;
+        }
+        public async Task<PostDomain> AddAsync(PostDomain entity)
+        {
+            return await _postRepository.AddAsync(entity);
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            await _postRepository.DeleteAsync(id);
         }
 
         public Task<IEnumerable<PostDomain>> FindAsync(Expression<Func<PostDomain, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return _postRepository.FindAsync(predicate);
         }
 
         public Task<IEnumerable<PostDomain>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return _postRepository.GetAllAsync();
         }
 
         public Task<PostDomain> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return _postRepository.GetByIdAsync(id);
         }
 
-        public Task UpdateAsync(PostDomain entity)
+        public async Task UpdateAsync(PostDomain entity)
         {
-            throw new NotImplementedException();
+            await _postRepository.UpdateAsync(entity);
         }
     }
 }

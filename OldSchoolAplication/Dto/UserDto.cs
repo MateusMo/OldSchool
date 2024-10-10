@@ -20,12 +20,12 @@ namespace OldSchoolAplication.Dto
         }
         public static int[] CommandReadToDomain(string[] command)
         {
-            return command.Skip(4).Select(int.Parse).ToArray();
+            return command.Skip(3).Select(int.Parse).ToArray();
         }
         public static UserDomain CommandUpdateToDomain(UserDomain user, string[] command)
         {
-            user.PasswordHash = command[6];
-            user.Nickname = command[4];
+            user.PasswordHash = command[5];
+            user.Nickname = command[3];
             return user;
         }
     }

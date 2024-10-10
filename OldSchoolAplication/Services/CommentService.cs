@@ -1,4 +1,5 @@
 ﻿using OldSchoolDomain.Domain;
+using OldSchoolInfrastructure.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,29 +11,34 @@ namespace OldSchoolAplication.Services
 {
     public class CommentService : ICommentService
     {
-        public Task<CommentDomain> AddAsync(CommentDomain entity)
+        private readonly ICommentRepository _commentRepository;
+        public CommentService(ICommentRepository commentRepository)
         {
-            throw new NotImplementedException();
+            _commentRepository = commentRepository;
         }
-        public Task DeleteAsync(int id)
+        public async Task<CommentDomain> AddAsync(CommentDomain entity)
         {
-            throw new NotImplementedException();
+            return await _commentRepository.AddAsync(entity);
+        }
+        public async Task DeleteAsync(int id)
+        {
+            await _commentRepository.DeleteAsync(id);
         }
         public Task<IEnumerable<CommentDomain>> FindAsync(Expression<Func<CommentDomain, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return _commentRepository.FindAsync(predicate);
         }
         public Task<IEnumerable<CommentDomain>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return _commentRepository.GetAllAsync();
         }
         public Task<CommentDomain> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return _commentRepository.GetByIdAsync(id);
         }
-        public Task UpdateAsync(CommentDomain entity)
+        public async Task UpdateAsync(CommentDomain entity)
         {
-            throw new NotImplementedException();
+            await _commentRepository.UpdateAsync(entity);
         }
     }
 }

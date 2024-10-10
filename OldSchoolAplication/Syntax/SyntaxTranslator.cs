@@ -17,13 +17,24 @@ namespace OldSchoolAplication
         }
         public CommandContextEnum IdentifyContext(string[] commandParts)
         {
+            //Login
+            if (commandParts[0] == _syntax.Login[0]
+                && commandParts[1] == _syntax.Login[1]
+                && commandParts[2] == _syntax.Login[2]
+                && commandParts[3] == _syntax.Login[3]
+                && commandParts[4] == _syntax.Login[4]
+                && commandParts[5] == _syntax.Login[5]
+                && commandParts[7] == _syntax.Login[7])
+            {
+                return CommandContextEnum.Login;
+            }
             //Delete me / Update me
             if (commandParts[0] == _syntax.DeleteUser[0] && commandParts[1] == _syntax.DeleteUser[1])
             {
                 return CommandContextEnum.CurrentUserWantToDeleteAccount;
             }
 
-            if (commandParts[0] == _syntax.UpdateUser[0] && commandParts[1] == _syntax.UpdateUser[0])
+            if (commandParts[0] == _syntax.UpdateUser[0] && commandParts[1] == _syntax.UpdateUser[1])
             {
                 return CommandContextEnum.CurrentUserWantToUpdateAccount;
             }
@@ -40,7 +51,7 @@ namespace OldSchoolAplication
             if (commandParts[0] == _syntax.ReadUser[0]
                 && commandParts[1] == _syntax.ReadUser[1]
                 && commandParts[2] == _syntax.ReadUser[2]
-                && commandParts[3] == _syntax.ReadUser[3])
+                )
             {
                 return CommandContextEnum.ReadUser;
             }
@@ -56,8 +67,7 @@ namespace OldSchoolAplication
 
             if (commandParts[0] == _syntax.ReadPost[0]
                 && commandParts[1] == _syntax.ReadPost[1]
-                && commandParts[2] == _syntax.ReadPost[2]
-                && commandParts[3] == _syntax.ReadPost[3])
+                && commandParts[2] == _syntax.ReadPost[2])
             {
                 return CommandContextEnum.ReadPost;
             }
@@ -65,8 +75,7 @@ namespace OldSchoolAplication
             if (commandParts[0] == _syntax.DeletePost[0]
                 && commandParts[1] == _syntax.DeletePost[1]
                 && commandParts[2] == _syntax.DeletePost[2]
-                && commandParts[3] == _syntax.DeletePost[3]
-                && commandParts[4] == _syntax.DeletePost[4])
+                )
             {
                 return CommandContextEnum.CurrentUserWantToDeleteHisPost;
             }
@@ -74,17 +83,14 @@ namespace OldSchoolAplication
             if (commandParts[0] == _syntax.UpdatePost[0]
                 && commandParts[1] == _syntax.UpdatePost[1]
                 && commandParts[2] == _syntax.UpdatePost[2]
-                && commandParts[3] == _syntax.UpdatePost[3]
-                && commandParts[4] == _syntax.UpdatePost[4]
-                && commandParts[6] == _syntax.UpdatePost[6])
+                && commandParts[4] == _syntax.UpdatePost[4])
             {
                 return CommandContextEnum.CurrentUserWantToUpdatePost;
             }
 
             if (commandParts[0] == _syntax.LikePost[0]
                 && commandParts[1] == _syntax.LikePost[1]
-                && commandParts[2] == _syntax.LikePost[2]
-                && commandParts[3] == _syntax.LikePost[3])
+                && commandParts[2] == _syntax.LikePost[2])
             {
                 return CommandContextEnum.LikePost;
             }
@@ -101,16 +107,14 @@ namespace OldSchoolAplication
 
             if (commandParts[0] == _syntax.ReadComment[0]
                 && commandParts[1] == _syntax.ReadComment[1]
-                && commandParts[2] == _syntax.ReadComment[2]
-                && commandParts[3] == _syntax.ReadComment[3])
+                && commandParts[2] == _syntax.ReadComment[2])
             {
                 return CommandContextEnum.ReadComment;
             }
 
             if (commandParts[0] == _syntax.UpdateComment[0]
                 && commandParts[1] == _syntax.UpdateComment[1]
-                && commandParts[2] == _syntax.UpdateComment[2]
-                && commandParts[3] == _syntax.UpdateComment[3])
+                && commandParts[2] == _syntax.UpdateComment[2])
             {
                 return CommandContextEnum.CurrentUserWantToUpdateComment;
             }
@@ -118,8 +122,7 @@ namespace OldSchoolAplication
             if (commandParts[0] == _syntax.DeleteComment[0]
                 && commandParts[1] == _syntax.DeleteComment[1]
                 && commandParts[2] == _syntax.DeleteComment[2]
-                && commandParts[3] == _syntax.DeleteComment[3]
-                && commandParts[4] == _syntax.DeleteComment[4])
+                )
             {
                 return CommandContextEnum.CurrentUserWantToDeleteHisComment;
             }

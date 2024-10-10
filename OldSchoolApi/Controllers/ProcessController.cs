@@ -18,7 +18,7 @@ namespace OldSchoolApi.Controllers
         {
             try
             {
-                string result = await _commandService.ExecuteCommand(ProcessDtoController.ToServiceDto(process));
+                var result = await _commandService.ExecuteCommand(ProcessDtoController.ToServiceDto(process));
                 return Ok(result);
             }
             catch (Exception ex) 
