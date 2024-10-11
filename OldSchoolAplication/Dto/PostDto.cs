@@ -15,6 +15,7 @@ namespace OldSchoolAplication.Dto
         {
             return new PostDomain()
             {
+                UpdatedAt = DateTime.Now,
                 CreatedAt = DateTime.Now,
                 UserId = userId,
                 Content = commands.Length > 3 ? commands[3] : null,
@@ -34,6 +35,7 @@ namespace OldSchoolAplication.Dto
             post.ASCII = commands.Length >=7 ? commands[6] : post.ASCII;
             post.KeyWords = commands.Length >= 9 ? commands[8] : post.KeyWords;
             post.Links = commands.Length >= 11 ? commands[8] : post.Links;
+            post.UpdatedAt = DateTime.Now;
             return post;
         }
         public static int[] CommandDeleteToDomain(string[]commands)

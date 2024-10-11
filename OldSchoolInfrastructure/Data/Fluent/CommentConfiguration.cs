@@ -14,8 +14,17 @@ namespace OldSchoolDomain.Data.Configurations
                    .ValueGeneratedOnAdd()
                    .UseIdentityColumn(); // Geração automática de ID
 
-            builder.Property(c => c.Content).IsRequired();
-            builder.Property(c => c.CreatedAt).IsRequired();
+            builder.Property(c => c.Content)
+                .HasColumnType("NVARCHAR")
+                .HasMaxLength(200)
+                .IsRequired();
+
+            builder.Property(u => u.CreatedAt)
+               .IsRequired()
+               .HasColumnType("DateTime");
+            builder.Property(u => u.UpdatedAt)
+                .IsRequired()
+                .HasColumnType("DateTime");
         }
     }
 }

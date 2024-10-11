@@ -18,12 +18,22 @@ namespace OldSchoolDomain.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(50)
                 .HasColumnType("NVARCHAR");
+
             builder.Property(u => u.PasswordHash)
                 .IsRequired()
                 .HasMaxLength(50)
                 .HasColumnType("NVARCHAR");
 
             builder.Property(u => u.LastLogin)
+                .IsRequired()
+                .HasColumnType("DateTime");
+
+
+            builder.Property(u => u.CreatedAt)
+                .IsRequired()
+                .HasColumnType("DateTime");
+
+            builder.Property(u => u.UpdatedAt)
                 .IsRequired()
                 .HasColumnType("DateTime");
 

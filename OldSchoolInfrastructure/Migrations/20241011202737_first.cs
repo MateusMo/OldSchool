@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OldSchoolInfrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class First : Migration
+    public partial class first : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,7 +19,9 @@ namespace OldSchoolInfrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nickname = table.Column<string>(type: "NVARCHAR(50)", maxLength: 50, nullable: false),
                     PasswordHash = table.Column<string>(type: "NVARCHAR(50)", maxLength: 50, nullable: false),
-                    LastLogin = table.Column<DateTime>(type: "DateTime", nullable: false)
+                    LastLogin = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "DateTime", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -33,12 +35,13 @@ namespace OldSchoolInfrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    Content = table.Column<string>(type: "NVARCHAR(200)", maxLength: 200, nullable: false),
+                    Content = table.Column<string>(type: "NVARCHAR(300)", maxLength: 300, nullable: false),
                     ASCII = table.Column<string>(type: "NVARCHAR(1000)", maxLength: 1000, nullable: true),
                     KeyWords = table.Column<string>(type: "NVARCHAR(100)", maxLength: 100, nullable: true),
                     Links = table.Column<string>(type: "NVARCHAR(100)", maxLength: 100, nullable: true),
                     Likes = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "DateTime", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "DateTime", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -58,8 +61,9 @@ namespace OldSchoolInfrastructure.Migrations
                     CommentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PostId = table.Column<int>(type: "int", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Content = table.Column<string>(type: "NVARCHAR(200)", maxLength: 200, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "DateTime", nullable: false)
                 },
                 constraints: table =>
                 {

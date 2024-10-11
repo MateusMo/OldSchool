@@ -21,6 +21,7 @@ namespace OldSchoolAplication.Dto
                     PostId = item,
                     Content = command[3],
                     CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
                 });
             }
             return commentList; 
@@ -49,6 +50,7 @@ namespace OldSchoolAplication.Dto
 
         public static CommentDomain CommandUpdateToDomain(CommentDomain comment,string[] command)
         {
+            comment.UpdatedAt = DateTime.Now;
             comment.Content = command[5];
             return comment;
         }

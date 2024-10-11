@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace OldSchoolDomain.Domain
 {
-    public class PostDomain
+    public class PostDomain : Metadata
     {
         public int Id { get; set; }
         public int UserId { get; set; } 
@@ -13,6 +13,5 @@ namespace OldSchoolDomain.Domain
         public string? Links { get; set; }
         public int Likes { get; set; } = 0; 
         public List<CommentDomain> Comments { get; set; } = new List<CommentDomain>(); 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

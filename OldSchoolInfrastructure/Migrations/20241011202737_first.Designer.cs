@@ -12,8 +12,8 @@ using OldSchoolInfrastructure.Data;
 namespace OldSchoolInfrastructure.Migrations
 {
     [DbContext(typeof(OldSchoolContext))]
-    [Migration("20241004191124_First")]
-    partial class First
+    [Migration("20241011202737_first")]
+    partial class first
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,13 +35,17 @@ namespace OldSchoolInfrastructure.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("NVARCHAR");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("DateTime");
 
                     b.Property<int>("PostId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("DateTime");
 
                     b.HasKey("CommentId");
 
@@ -64,7 +68,7 @@ namespace OldSchoolInfrastructure.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(200)
+                        .HasMaxLength(300)
                         .HasColumnType("NVARCHAR");
 
                     b.Property<DateTime>("CreatedAt")
@@ -80,6 +84,9 @@ namespace OldSchoolInfrastructure.Migrations
                     b.Property<string>("Links")
                         .HasMaxLength(100)
                         .HasColumnType("NVARCHAR");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("DateTime");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -99,6 +106,9 @@ namespace OldSchoolInfrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("DateTime");
+
                     b.Property<DateTime>("LastLogin")
                         .HasColumnType("DateTime");
 
@@ -111,6 +121,9 @@ namespace OldSchoolInfrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("NVARCHAR");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("DateTime");
 
                     b.HasKey("Id");
 

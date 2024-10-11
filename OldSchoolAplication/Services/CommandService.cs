@@ -168,7 +168,7 @@ namespace OldSchoolAplication.Services
                     List<string> userList = new();
                     foreach (var item in users)
                     {
-                        userList.Add($@"Id: {item.Id} Nickname: {item.Nickname}, LastLogin: {item.LastLogin}");
+                        userList.Add($@"Id: {item.Id} Nickname: {item.Nickname}, LastLogin: {item.LastLogin}, Last Update: {item.UpdatedAt} ,Created At: {item.CreatedAt}");
                     }
                     return new ResponseDto()
                     {
@@ -190,7 +190,7 @@ namespace OldSchoolAplication.Services
                         if (item.ASCII == null)
                             item.ASCII = "--";
 
-                        formatedPosts.Add($"ID: {item.Id}, Likes: {item.Likes}, Content: {item.Content}, Created At: {item.CreatedAt}, Links: {item.Links}, Keywords: {item.KeyWords}, ASCII: {item.ASCII}");
+                        formatedPosts.Add($"ID: {item.Id}, Likes: {item.Likes}, Content: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt} ,Links: {item.Links}, Keywords: {item.KeyWords}, ASCII: {item.ASCII}");
                     }
                     return new ResponseDto()
                     {
@@ -207,7 +207,7 @@ namespace OldSchoolAplication.Services
                     List<string> formatedComments = new();
                     foreach (var item in comments)
                     {
-                        formatedComments.Add($"PostId: {item.PostId}, Comment: {item.Content}, CreatedAt: {item.CreatedAt}");
+                        formatedComments.Add($"PostId: {item.PostId}, Comment: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt}");
                     }
                     return new ResponseDto()
                     {

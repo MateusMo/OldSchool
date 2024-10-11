@@ -16,7 +16,7 @@ namespace OldSchoolDomain.Data.Configurations
 
             builder.Property(p => p.Content)
                 .IsRequired()
-                .HasMaxLength(200)
+                .HasMaxLength(300)
                 .HasColumnType("NVARCHAR");
             builder.Property(p => p.ASCII)
                 .HasMaxLength(1000)
@@ -30,9 +30,12 @@ namespace OldSchoolDomain.Data.Configurations
                 .HasMaxLength(100)
                 .HasColumnType("NVARCHAR")
                 .IsRequired(false);
-            builder.Property(p => p.CreatedAt)
-                .HasColumnType("DateTime")
-                .IsRequired();
+            builder.Property(u => u.CreatedAt)
+                .IsRequired()
+                .HasColumnType("DateTime");
+            builder.Property(u => u.UpdatedAt)
+                .IsRequired()
+                .HasColumnType("DateTime");
 
             builder.HasMany(p => p.Comments)
                    .WithOne()

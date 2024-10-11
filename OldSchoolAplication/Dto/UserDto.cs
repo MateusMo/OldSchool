@@ -13,6 +13,8 @@ namespace OldSchoolAplication.Dto
         {
             return new UserDomain()
             {
+                UpdatedAt = DateTime.Now,
+                CreatedAt = DateTime.Now,
                 LastLogin = DateTime.Now,
                 Nickname = command[3],
                 PasswordHash = command[5]
@@ -26,6 +28,7 @@ namespace OldSchoolAplication.Dto
         {
             user.PasswordHash = command[5];
             user.Nickname = command[3];
+            user.UpdatedAt = DateTime.Now;
             return user;
         }
     }

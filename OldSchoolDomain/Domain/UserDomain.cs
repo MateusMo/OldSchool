@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace OldSchoolDomain.Domain
 {
-    public class UserDomain
+    public class UserDomain : Metadata
     {
         public int Id { get; set; }
         public string Nickname { get; set; }
