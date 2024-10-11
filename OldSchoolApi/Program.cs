@@ -57,6 +57,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
         };
     });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:4200") // Adicione o domínio do front-end Angular
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
 builder.Services.AddDbContext<OldSchoolContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("OldSchool")));
 builder.Services.AddScoped<IGetToken>(x => new GetToken(builder.Configuration["Jwt:SecretKey"], builder.Configuration["Jwt:Issuer"], builder.Configuration["Jwt:Audience"]));
 builder.Services.AddScoped<IPostRepository, PostRepository>();
@@ -76,6 +86,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors("AllowSpecificOrigin");
 app.UseHttpsRedirection();
 app.UseAuthentication();  
 app.UseAuthorization();   

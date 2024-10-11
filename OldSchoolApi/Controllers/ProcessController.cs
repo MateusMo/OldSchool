@@ -14,21 +14,7 @@ namespace OldSchoolApi.Controllers
             _commandService = commandService;
         }
 
-        [HttpPost("-.-./---/--/--/.-/-./-.."),Authorize]
-        public async Task<IActionResult> ProcessCommand([FromBody]ProcessDtoController process)
-        {
-            try
-            {
-                var result = await _commandService.ExecuteCommand(ProcessDtoController.ToServiceDto(process));
-                return Ok(result);
-            }
-            catch (Exception ex) 
-            { 
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPost(".-/-./---/-./-.--/--/---/..-/..."), AllowAnonymous]
+        [HttpPost("anonymous"), AllowAnonymous]
         public async Task<IActionResult> AnonymousCommands([FromBody] AnonymousDto anonymous)
         {
             try
@@ -42,5 +28,18 @@ namespace OldSchoolApi.Controllers
             }
         }
 
+        [HttpPost("command"),Authorize]
+        public async Task<IActionResult> ProcessCommand([FromBody]ProcessDtoController process)
+        {
+            try
+            {
+                var result = await _commandService.ExecuteCommand(ProcessDtoController.ToServiceDto(process));
+                return Ok(result);
+            }
+            catch (Exception ex) 
+            { 
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

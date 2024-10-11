@@ -51,7 +51,7 @@ namespace OldSchoolAplication.Services
                     var tokenReturn = await _getToken.GenerateToken(userLogin.First());
                     return new ResponseDto()
                     {
-                        Messages = [userLogin.First().Id.ToString(), tokenReturn]
+                        Messages = ["logged",$"Welcome {userLogin.First().Nickname} =)",userLogin.First().Id.ToString(), tokenReturn]
                     };
                 case CommandContextEnum.CreateUser:
                     var createdUser = await _userService.AddAsync(UserDto.CommandAddToDomain(commandParts));

@@ -27,6 +27,7 @@ namespace OldSchoolAplication
         public string[] ReadComment { get; set; }
         public string[] UpdateComment { get; set; }
 
+
         public static Syntax GetSyntax()
         {
             var syntax = new Syntax()
