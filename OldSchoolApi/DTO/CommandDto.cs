@@ -2,11 +2,11 @@
 
 namespace OldSchoolApi.DTO
 {
-    public class AnonymousDto
+    public class CommandDto
     {
         public string Content { get; set; }
 
-        public static AnonynmousDtoService ToAnonymousDtoService(AnonymousDto dto)
+        public static AnonynmousDtoService ToAnonymousDtoService(CommandDto dto)
         {
             return new AnonynmousDtoService()
             {

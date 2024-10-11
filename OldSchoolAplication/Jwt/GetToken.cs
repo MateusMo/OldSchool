@@ -32,6 +32,7 @@ namespace OldSchoolAplication.Jwt
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, user.Nickname),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Role, "User")     
                 }),
                 Expires = DateTime.UtcNow.AddHours(1), 

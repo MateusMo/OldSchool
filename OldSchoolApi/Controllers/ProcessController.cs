@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using OldSchoolApi.DTO;
 using OldSchoolAplication.Services;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace OldSchoolApi.Controllers
 {
@@ -15,11 +17,11 @@ namespace OldSchoolApi.Controllers
         }
 
         [HttpPost("anonymous"), AllowAnonymous]
-        public async Task<IActionResult> AnonymousCommands([FromBody] AnonymousDto anonymous)
+        public async Task<IActionResult> AnonymousCommands([FromBody] CommandDto anonymous)
         {
             try
             {
-                var result = await _commandService.ExecuteAnonymous(AnonymousDto.ToAnonymousDtoService(anonymous));
+                var result = await _commandService.ExecuteAnonymous(CommandDto.ToAnonymousDtoService(anonymous));
                 return Ok(result);
             }
             catch (Exception ex)
@@ -29,11 +31,16 @@ namespace OldSchoolApi.Controllers
         }
 
         [HttpPost("command"),Authorize]
-        public async Task<IActionResult> ProcessCommand([FromBody]ProcessDtoController process)
+        public async Task<IActionResult> ProcessCommand([FromBody]CommandDto process)
         {
             try
             {
-                var result = await _commandService.ExecuteCommand(ProcessDtoController.ToServiceDto(process));
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var result = await _commandService.ExecuteCommand(new OldSchoolAplication.Dto.ProcessDtoService()
+                {
+                   Content = process.Content,
+                   UserId = int.Parse(userId),
+                });
                 return Ok(result);
             }
             catch (Exception ex) 
