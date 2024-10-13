@@ -14,6 +14,7 @@ namespace OldSchoolAplication
         public string[] CreateUser { get; set; }
         public string[] DeleteUser { get; set; }
         public string[] ReadUser { get; set; }
+        public string[] ReadMe { get; set; }
         public string[] UpdateUser { get; set; }
 
         public string[] CreatePost { get; set; }
@@ -38,6 +39,7 @@ namespace OldSchoolAplication
                 //User basic syntax
                 CreateUser = ["CREATE", "USER", "NICKNAME", "", "PASSWORD", ""],
                 DeleteUser = ["DELETE", "ME"],
+                ReadMe = ["READ","ME"],
                 ReadUser = ["READ", "USER", "ID", ""],
                 UpdateUser = ["UPDATE", "ME", "NICKNAME", "", "PASSWORD", ""],
 
@@ -49,9 +51,9 @@ namespace OldSchoolAplication
                 LikePost = ["LIKE", "POST", "ID", ""],
 
                 //Comment basic syntax
-                CreateComment = ["CREATE", "COMMENT", "CONTENT", "", "POST", ""],
+                CreateComment = ["CREATE", "COMMENT", "CONTENT", "", "POST_ID", ""],
                 DeleteComment = ["DELETE", "COMMENT", "ID", ""],
-                ReadComment = ["READ", "COMMENT", "POST", "", "DATE", "", "TOP", ""],
+                ReadComment = ["READ", "COMMENT", "POST_ID", "", "DATE", "", "TOP", ""],
                 UpdateComment = ["UPDATE", "COMMENT", "ID", "", "CONTENT", ""],
             };
 

@@ -40,6 +40,13 @@ namespace OldSchoolAplication
             }
 
             //User
+            if (commandParts[0] == _syntax.ReadMe[0]
+                && commandParts[1] == _syntax.ReadMe[1]
+                )
+            {
+                return CommandContextEnum.ReadMe;
+            }
+
             if (commandParts[0] == _syntax.CreateUser[0]
                 && commandParts[1] == _syntax.CreateUser[1]
                 && commandParts[2] == _syntax.CreateUser[2]

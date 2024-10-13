@@ -13,6 +13,7 @@ namespace OldSchoolAplication.Enum
         CurrentUserWantToDeleteAccount = 1,
         CurrentUserWantToDeleteHisPost = 2,
         CurrentUserWantToDeleteHisComment = 3,
+        ReadMe = 16,
 
         CurrentUserWantToUpdateAccount = 4,
         CurrentUserWantToUpdatePost = 5,

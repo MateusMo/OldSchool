@@ -27,8 +27,36 @@ namespace OldSchoolAplication.Dto
         }
         public static int[] CommandReadToDomain(string[] commands)
         {
-            return commands.Skip(3).Select(int.Parse).ToArray();
+            var result = new List<int>();
+
+            foreach (var command in commands.Skip(3))
+            {
+                if (command.Contains("..."))
+                {
+                    // Divide a string para obter os dois números do range
+                    var numbers = command.Split(new[] { "..." }, StringSplitOptions.None);
+                    int start = int.Parse(numbers[0]);
+                    int end = int.Parse(numbers[1]);
+
+                    // Adiciona a sequência de números do range à lista de resultados
+                    result.AddRange(Enumerable.Range(start, end - start + 1));
+                }
+                else
+                {
+                    // Adiciona o número convertido à lista de resultados
+                    result.Add(int.Parse(command));
+                }
+            }
+
+            // Retorna a lista de números como um array
+            return result.ToArray();
         }
+
+        public static int GetPostIdToUpdate(string[] commands)
+        {
+            return int.Parse(commands[3]);
+        }
+
         public static PostDomain CommandUpdateToDomain(PostDomain post, string[] commands)
         {
             post.Content = commands[5];

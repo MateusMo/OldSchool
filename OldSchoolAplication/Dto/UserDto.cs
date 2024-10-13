@@ -22,8 +22,28 @@ namespace OldSchoolAplication.Dto
         }
         public static int[] CommandReadToDomain(string[] command)
         {
+            // Verifica se existe um comando com "..." no array
+            if (command.Any(x => x.Contains("...")))
+            {
+                // Encontra a string que contém "..."
+                var range = command.First(x => x.Contains("..."));
+
+                // Divide a string para obter os dois números do range
+                var numbers = range.Split(new[] { "..." }, StringSplitOptions.None);
+                int start = int.Parse(numbers[0]);
+                int end = int.Parse(numbers[1]);
+
+                // Gera uma lista de inteiros do primeiro até o último número do range
+                var rangeNumbers = Enumerable.Range(start, end - start + 1).ToArray();
+
+                // Retorna a lista de números do range
+                return rangeNumbers;
+            }
+
+            // Caso não tenha "..." no comando, retorna os valores restantes após o terceiro
             return command.Skip(3).Select(int.Parse).ToArray();
         }
+
         public static UserDomain CommandUpdateToDomain(UserDomain user, string[] command)
         {
             user.PasswordHash = command[5];

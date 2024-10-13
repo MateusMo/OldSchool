@@ -4,6 +4,7 @@ using OldSchoolAplication.Jwt;
 using OldSchoolInfrastructure.Repository;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 
 namespace OldSchoolAplication.Services
@@ -51,8 +52,9 @@ namespace OldSchoolAplication.Services
                     var tokenReturn = await _getToken.GenerateToken(userLogin.First());
                     return new ResponseDto()
                     {
-                        Messages = ["logged",$"Welcome {userLogin.First().Nickname} =)", tokenReturn]
+                        Messages = ["logged", $"Welcome {userLogin.First().Nickname} =)", tokenReturn]
                     };
+               
                 case CommandContextEnum.CreateUser:
                     var createdUser = await _userService.AddAsync(UserDto.CommandAddToDomain(commandParts));
                     return new ResponseDto()
@@ -128,10 +130,11 @@ namespace OldSchoolAplication.Services
                     };
 
                 case CommandContextEnum.CurrentUserWantToUpdatePost:
+                    var postId = PostDto.GetPostIdToUpdate(commandParts);
+                    var postToUpdate = await _postService.GetByIdAsync(postId);
                     await _postService
                        .UpdateAsync(PostDto
-                       .CommandUpdateToDomain(await _postService
-                       .GetByIdAsync(_processDtoService.UserId), commandParts));
+                       .CommandUpdateToDomain(postToUpdate, commandParts));
 
                     return new ResponseDto()
                     {
@@ -144,6 +147,13 @@ namespace OldSchoolAplication.Services
                     return new ResponseDto()
                     {
                         Messages = ["Comment Updated"]
+                    };
+                case CommandContextEnum.ReadMe:
+                    var readUser = await _userService.GetByIdAsync(_processDtoService.UserId);
+                    var posts = await _postService.FindAsync(x => x.UserId == _processDtoService.UserId);
+                    return new ResponseDto()
+                    {
+                        Messages = [$"Id: {readUser.Id}, Nickname: {readUser.Nickname}, CreatedAt: {readUser.CreatedAt}, UpdatedAt: {readUser.UpdatedAt}, LastLogin: {readUser.LastLogin}, TotalPosts: {posts.Count()}, TotalLikes: {posts.Sum(x => x.Likes)}"]
                     };
 
                 case CommandContextEnum.CreatePost:
@@ -164,11 +174,19 @@ namespace OldSchoolAplication.Services
                     };
                 case CommandContextEnum.ReadUser:
                     var ids = UserDto.CommandReadToDomain(commandParts);
+                    if(ids.Count() > 200)
+                    {
+                        return new ResponseDto()
+                        {
+                            Messages = ["Your range must have only 200 ids between the first and last value."],
+                        };
+                    }
+                    var postsFromUsers = await _postService.FindAsync(x => ids.Contains(x.UserId));
                     var users = await _userService.FindAsync(x => ids.Contains(x.Id));
                     List<string> userList = new();
                     foreach (var item in users)
                     {
-                        userList.Add($@"Id: {item.Id} Nickname: {item.Nickname}, LastLogin: {item.LastLogin}, Last Update: {item.UpdatedAt} ,Created At: {item.CreatedAt}");
+                        userList.Add($@"Id: {item.Id}, Nickname: {item.Nickname}, TotalPosts: {postsFromUsers.Where(x => x.UserId == item.Id).Count()}, TotalLikes: {postsFromUsers.Where(x => x.UserId == item.Id).Sum(x => x.Likes)},LastLogin: {item.LastLogin}, Last Update: {item.UpdatedAt} ,Created At: {item.CreatedAt}");
                     }
                     return new ResponseDto()
                     {
@@ -215,12 +233,19 @@ namespace OldSchoolAplication.Services
                     };
 
                 case CommandContextEnum.LikePost:
-                    var posts = await _postService.FindAsync(x => PostDto.CommandLikeToId(commandParts).Contains(x.Id));
-                    foreach (var item in posts)
+                    if (commandParts.Any(x => x.Contains("...")))
+                    {
+                        return new ResponseDto()
+                        {
+                            Messages = ["The operator ... is not avaiable to likes. Choose specific ids to like."]
+                        };
+                    }
+                    var postsToLike = await _postService.FindAsync(x => PostDto.CommandLikeToId(commandParts).Contains(x.Id));
+                    foreach (var item in postsToLike)
                     {
                         item.Likes++;
                     }
-                    foreach (var item in posts)
+                    foreach (var item in postsToLike)
                     {
                         await _postService.UpdateAsync(item);
                     }
