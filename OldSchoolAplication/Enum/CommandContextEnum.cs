@@ -26,6 +26,7 @@ namespace OldSchoolAplication.Enum
         ReadUser = 10,
         ReadPost = 11,
         ReadComment = 12,
+        ReadCommentById = 17,
 
         LikePost = 13,
 

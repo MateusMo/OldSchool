@@ -26,6 +26,7 @@ namespace OldSchoolAplication
         public string[] CreateComment { get; set; }
         public string[] DeleteComment { get; set; }
         public string[] ReadComment { get; set; }
+        public string[] ReadCommentById { get; set; }
         public string[] UpdateComment { get; set; }
 
 
@@ -54,6 +55,7 @@ namespace OldSchoolAplication
                 CreateComment = ["CREATE", "COMMENT", "CONTENT", "", "POST_ID", ""],
                 DeleteComment = ["DELETE", "COMMENT", "ID", ""],
                 ReadComment = ["READ", "COMMENT", "POST_ID", "", "DATE", "", "TOP", ""],
+                ReadCommentById = ["READ","COMMENT","ID",""],
                 UpdateComment = ["UPDATE", "COMMENT", "ID", "", "CONTENT", ""],
             };
 

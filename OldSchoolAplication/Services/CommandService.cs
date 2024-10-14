@@ -39,38 +39,15 @@ namespace OldSchoolAplication.Services
             switch (context)
             {
                 case CommandContextEnum.Login:
-                    var userLogin = await _userService
-                        .FindAsync(x => x.Nickname == commandParts[6] && x.PasswordHash == commandParts[8])
-                        ;
-                    if (userLogin == null || userLogin.Count() == 0)
-                    {
-                        return new ResponseDto()
-                        {
-                            Errors = ["You can't, sorry =( Your credentials are wrong"]
-                        };
-                    }
-                    var tokenReturn = await _getToken.GenerateToken(userLogin.First());
-                    return new ResponseDto()
-                    {
-                        Messages = ["logged", $"Welcome {userLogin.First().Nickname} =)", tokenReturn]
-                    };
+                    return await LoginContext(commandParts);
                
                 case CommandContextEnum.CreateUser:
-                    var createdUser = await _userService.AddAsync(UserDto.CommandAddToDomain(commandParts));
-                    return new ResponseDto()
-                    {
-                        Messages = ["User created"]
-                    };
+                    return await CreateUserContext(commandParts);
+
                 case CommandContextEnum.CommandNotFound:
-                    return new ResponseDto()
-                    {
-                        Errors = ["Command not found."]
-                    };
+                    return await NotFoundContext();
                 default:
-                    return new ResponseDto()
-                    {
-                        Errors = ["Command not found."]
-                    };
+                    return await NotFoundContext();
             }
         }
 
@@ -79,191 +56,60 @@ namespace OldSchoolAplication.Services
             UpdateProcessDto(process);
             var commandParts = SplitCommand(process.Content.ToUpper());
 
-
             if (commandParts.Length == 0)
-                return new ResponseDto()
-                {
-                    Errors = ["Empty Input."]
-                };
+                return await EmptyCommandContext();
 
             var context = _syntaxTranslator.IdentifyContext(commandParts);
 
             switch (context)
             {
-
                 case CommandContextEnum.CurrentUserWantToDeleteAccount:
-                    await _userService.DeleteAsync(_processDtoService.UserId);
-                    return new ResponseDto()
-                    {
-                        Messages = ["User successfully removed"]
-                    };
+                    return await DeleteAccountContext();
 
                 case CommandContextEnum.CurrentUserWantToDeleteHisPost:
-                    var postIds = PostDto.CommandDeleteToDomain(commandParts);
-                    foreach (var item in postIds)
-                    {
-                        await _postService.DeleteAsync(item);
-                    }
-                    return new ResponseDto()
-                    {
-                        Messages = ["Post Successfully Deleted"]
-                    };
+                    return await DeletepostContext(commandParts);
 
                 case CommandContextEnum.CurrentUserWantToDeleteHisComment:
-                    var commentIds = CommentDto.CommandDeleteToDomain(commandParts);
-                    foreach (var item in commentIds)
-                    {
-                        await _commentService.DeleteAsync(item);
-                    };
-                    return new ResponseDto()
-                    {
-                        Messages = ["Comment or Comments Deleted"]
-                    };
+                    return await DeleteCommentContext(commandParts);
 
                 case CommandContextEnum.CurrentUserWantToUpdateAccount:
-                    var user = await _userService.GetByIdAsync(process.UserId);
-                    if (user == null) return new ResponseDto() { Errors = ["User Not Found"] };
-                    await _userService.UpdateAsync(UserDto.CommandUpdateToDomain(user, commandParts));
-                    return new ResponseDto()
-                    {
-                        Messages = ["User Updated"]
-                    };
+                    return await UpdateUserContext(commandParts);
 
                 case CommandContextEnum.CurrentUserWantToUpdatePost:
-                    var postId = PostDto.GetPostIdToUpdate(commandParts);
-                    var postToUpdate = await _postService.GetByIdAsync(postId);
-                    await _postService
-                       .UpdateAsync(PostDto
-                       .CommandUpdateToDomain(postToUpdate, commandParts));
+                    return await UpdatePostContext(commandParts);
 
-                    return new ResponseDto()
-                    {
-                        Messages = ["Post Successfully Updated."]
-                    };
                 case CommandContextEnum.CurrentUserWantToUpdateComment:
-                    var commandIDs = CommentDto.GetCommentId(commandParts);
-                    var comment = await _commentService.GetByIdAsync(commandIDs);
-                    await _commentService.UpdateAsync(CommentDto.CommandUpdateToDomain(comment, commandParts));
-                    return new ResponseDto()
-                    {
-                        Messages = ["Comment Updated"]
-                    };
+                    return await UpdateCommentContext(commandParts);
+
                 case CommandContextEnum.ReadMe:
-                    var readUser = await _userService.GetByIdAsync(_processDtoService.UserId);
-                    var posts = await _postService.FindAsync(x => x.UserId == _processDtoService.UserId);
-                    return new ResponseDto()
-                    {
-                        Messages = [$"Id: {readUser.Id}, Nickname: {readUser.Nickname}, CreatedAt: {readUser.CreatedAt}, UpdatedAt: {readUser.UpdatedAt}, LastLogin: {readUser.LastLogin}, TotalPosts: {posts.Count()}, TotalLikes: {posts.Sum(x => x.Likes)}"]
-                    };
+                    return await ReadMeContext(commandParts);
 
                 case CommandContextEnum.CreatePost:
-                    var post = await _postService.AddAsync(PostDto.CommandAddToDomain(commandParts, _processDtoService.UserId));
-                    return new ResponseDto()
-                    {
-                        Messages = [$"Post Successfully Created. Id: {post.Id}"]
-                    };
+                    return await CreatePostContext(commandParts);
+
                 case CommandContextEnum.CreateComment:
-                    var newComments = CommentDto.CommandAddToDomain(commandParts);
-                    foreach (var item in newComments)
-                    {
-                        await _commentService.AddAsync(item);
-                    }
-                    return new ResponseDto()
-                    {
-                        Messages = [$"Comment Or Comments Added"]
-                    };
+                    return await CreateCommentContext(commandParts);
+
                 case CommandContextEnum.ReadUser:
-                    var ids = UserDto.CommandReadToDomain(commandParts);
-                    if(ids.Count() > 200)
-                    {
-                        return new ResponseDto()
-                        {
-                            Messages = ["Your range must have only 200 ids between the first and last value."],
-                        };
-                    }
-                    var postsFromUsers = await _postService.FindAsync(x => ids.Contains(x.UserId));
-                    var users = await _userService.FindAsync(x => ids.Contains(x.Id));
-                    List<string> userList = new();
-                    foreach (var item in users)
-                    {
-                        userList.Add($@"Id: {item.Id}, Nickname: {item.Nickname}, TotalPosts: {postsFromUsers.Where(x => x.UserId == item.Id).Count()}, TotalLikes: {postsFromUsers.Where(x => x.UserId == item.Id).Sum(x => x.Likes)},LastLogin: {item.LastLogin}, Last Update: {item.UpdatedAt} ,Created At: {item.CreatedAt}");
-                    }
-                    return new ResponseDto()
-                    {
-                        Messages = userList.ToArray(),
-                    };
+                    return await ReadUserContext(commandParts);
+
                 case CommandContextEnum.ReadPost:
-                    var idsPost = PostDto.CommandReadToDomain(commandParts);
-                    var postsFromDatabase = await _postService.FindAsync(x => idsPost.Contains(x.Id));
-                    List<string> formatedPosts = new();
-
-                    foreach (var item in postsFromDatabase)
-                    {
-                        if (item.Links == null)
-                            item.Links = "--";
-
-                        if (item.KeyWords == null)
-                            item.KeyWords = "--";
-
-                        if (item.ASCII == null)
-                            item.ASCII = "--";
-
-                        formatedPosts.Add($"ID: {item.Id}, Likes: {item.Likes}, Content: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt} ,Links: {item.Links}, Keywords: {item.KeyWords}, ASCII: {item.ASCII}");
-                    }
-                    return new ResponseDto()
-                    {
-                        Messages = formatedPosts.ToArray(),
-                    };
+                    return await ReadPostContext(commandParts);
 
                 case CommandContextEnum.ReadComment:
-                    var predicate = CommentDto.CommandReadToDomain(commandParts);
-                    var comments = await _commentService
-                                    .FindAsync(x =>
-                                    x.PostId == predicate.PostId
-                                    && (!predicate.DateTime.HasValue || x.CreatedAt == predicate.DateTime.Value)
-                                    );
-                    List<string> formatedComments = new();
-                    foreach (var item in comments)
-                    {
-                        formatedComments.Add($"PostId: {item.PostId}, Comment: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt}");
-                    }
-                    return new ResponseDto()
-                    {
-                        Messages = formatedComments.ToArray(),
-                    };
+                    return await ReadCommentContext(commandParts);
+
+                case CommandContextEnum.ReadCommentById:
+                    return await ReadCommentByIdContext(commandParts);
 
                 case CommandContextEnum.LikePost:
-                    if (commandParts.Any(x => x.Contains("...")))
-                    {
-                        return new ResponseDto()
-                        {
-                            Messages = ["The operator ... is not avaiable to likes. Choose specific ids to like."]
-                        };
-                    }
-                    var postsToLike = await _postService.FindAsync(x => PostDto.CommandLikeToId(commandParts).Contains(x.Id));
-                    foreach (var item in postsToLike)
-                    {
-                        item.Likes++;
-                    }
-                    foreach (var item in postsToLike)
-                    {
-                        await _postService.UpdateAsync(item);
-                    }
-                    return new ResponseDto()
-                    {
-                        Messages = ["Like Added"]
-                    };
+                    return await LikePostContext(commandParts);
 
                 case CommandContextEnum.CommandNotFound:
-                    return new ResponseDto()
-                    {
-                        Errors = ["Command not found."]
-                    };
+                    return await NotFoundContext();
+
                 default:
-                    return new ResponseDto()
-                    {
-                        Errors = ["Command not found."]
-                    };
+                    return await NotFoundContext();
             }
         }
 
@@ -285,6 +131,265 @@ namespace OldSchoolAplication.Services
             }
 
             return result;
+        }
+
+        private async Task<ResponseDto> LoginContext(string[] commandParts)
+        {
+            var userLogin = await _userService
+                        .FindAsync(x => x.Nickname == commandParts[6] && x.PasswordHash == commandParts[8])
+                        ;
+            if (userLogin == null || userLogin.Count() == 0)
+            {
+                return new ResponseDto()
+                {
+                    Errors = ["You can't, sorry =( Your credentials are wrong"]
+                };
+            }
+            var tokenReturn = await _getToken.GenerateToken(userLogin.First());
+            return new ResponseDto()
+            {
+                Messages = ["logged", $"Welcome {userLogin.First().Nickname} =)", tokenReturn]
+            };
+        }
+        private async Task<ResponseDto> CreateUserContext(string[] commandParts)
+        {
+            var createdUser = await _userService.AddAsync(UserDto.CommandAddToDomain(commandParts));
+            return new ResponseDto()
+            {
+                Messages = ["User created"]
+            };
+        }
+        private async Task<ResponseDto> NotFoundContext()
+        {
+            return new ResponseDto()
+            {
+                Errors = ["Command not found."]
+            };
+        }
+        private async Task<ResponseDto> EmptyCommandContext()
+        {
+            return new ResponseDto()
+            {
+                Errors = ["Empty Input."]
+            };
+
+        }
+        private async Task<ResponseDto> DeleteAccountContext()
+        {
+            await _userService.DeleteAsync(_processDtoService.UserId);
+            return new ResponseDto()
+            {
+                Messages = ["User successfully removed"]
+            };
+        }
+        private async Task<ResponseDto> DeletepostContext(string[] commandParts)
+        {
+            var postIds = PostDto.CommandDeleteToDomain(commandParts);
+            foreach (var item in postIds)
+            {
+                await _postService.DeleteAsync(item);
+            }
+            return new ResponseDto()
+            {
+                Messages = ["Post Successfully Deleted"]
+            };
+        }
+        private async Task<ResponseDto> DeleteCommentContext(string[] commandParts)
+        {
+            var commentIds = CommentDto.CommandDeleteToDomain(commandParts);
+            foreach (var item in commentIds)
+            {
+                await _commentService.DeleteAsync(item);
+            };
+            return new ResponseDto()
+            {
+                Messages = ["Comment or Comments Deleted"]
+            };
+        }
+        private async Task<ResponseDto> UpdateUserContext(string[] commandParts)
+        {
+            var commandIDs = CommentDto.GetCommentId(commandParts);
+            var comment = await _commentService.GetByIdAsync(commandIDs);
+            await _commentService.UpdateAsync(CommentDto.CommandUpdateToDomain(comment, commandParts));
+            return new ResponseDto()
+            {
+                Messages = ["Comment Updated"]
+            };
+        }
+        private async Task<ResponseDto> UpdatePostContext(string[] commandParts)
+        {
+            var postId = PostDto.GetPostIdToUpdate(commandParts);
+            var postToUpdate = await _postService.GetByIdAsync(postId);
+            await _postService
+               .UpdateAsync(PostDto
+               .CommandUpdateToDomain(postToUpdate, commandParts));
+            return new ResponseDto()
+            {
+                Messages = ["Post Successfully Updated."]
+            };
+        }
+        private async Task<ResponseDto> UpdateCommentContext(string[] commandParts)
+        {
+            var commandIDs = CommentDto.GetCommentId(commandParts);
+            var comment = await _commentService.GetByIdAsync(commandIDs);
+            await _commentService.UpdateAsync(CommentDto.CommandUpdateToDomain(comment, commandParts));
+            return new ResponseDto()
+            {
+                Messages = ["Comment Updated"]
+            };
+        }
+        private async Task<ResponseDto> ReadMeContext(string[] commandParts)
+        {
+            var readUser = await _userService.GetByIdAsync(_processDtoService.UserId);
+            var posts = await _postService.FindAsync(x => x.UserId == _processDtoService.UserId);
+            return new ResponseDto()
+            {
+                Messages = [$"Id: {readUser.Id}, Nickname: {readUser.Nickname}, CreatedAt: {readUser.CreatedAt}, UpdatedAt: {readUser.UpdatedAt}, LastLogin: {readUser.LastLogin}, TotalPosts: {posts.Count()}, TotalLikes: {posts.Sum(x => x.Likes)}"]
+            };
+
+        }
+        private async Task<ResponseDto> CreatePostContext(string[] commandParts)
+        {
+            var post = await _postService.AddAsync(PostDto.CommandAddToDomain(commandParts, _processDtoService.UserId));
+            return new ResponseDto()
+            {
+                Messages = [$"Post Successfully Created. Id: {post.Id}"]
+            };
+        }
+        private async Task<ResponseDto> CreateCommentContext(string[] commandParts)
+        {
+            var newComments = CommentDto.CommandAddToDomain(commandParts);
+            foreach (var item in newComments)
+            {
+                await _commentService.AddAsync(item);
+            }
+            return new ResponseDto()
+            {
+                Messages = [$"Comment Added"]
+            };
+        }
+        private async Task<ResponseDto> ReadUserContext(string[] commandParts)
+        {
+            var ids = UserDto.CommandReadToDomain(commandParts);
+            if (ids.Count() > 200)
+            {
+                return new ResponseDto()
+                {
+                    Messages = ["Your range must have only 200 ids between the first and last value."],
+                };
+            }
+            var postsFromUsers = await _postService.FindAsync(x => ids.Contains(x.UserId));
+            var users = await _userService.FindAsync(x => ids.Contains(x.Id));
+            List<string> userList = new();
+            foreach (var item in users)
+            {
+                userList.Add($@"Id: {item.Id}, Nickname: {item.Nickname}, TotalPosts: {postsFromUsers.Where(x => x.UserId == item.Id).Count()}, TotalLikes: {postsFromUsers.Where(x => x.UserId == item.Id).Sum(x => x.Likes)},LastLogin: {item.LastLogin}, Last Update: {item.UpdatedAt} ,Created At: {item.CreatedAt}");
+            }
+            return new ResponseDto()
+            {
+                Messages = userList.ToArray(),
+            };
+        }
+        private async Task<ResponseDto> ReadPostContext(string[] commandParts)
+        {
+            var idsPost = PostDto.CommandReadToDomain(commandParts);
+            var postsFromDatabase = await _postService.FindAsync(x => idsPost.Contains(x.Id));
+            if (postsFromDatabase.Count() == 0)
+            {
+                return new ResponseDto()
+                {
+                    Messages = ["No posts were found"]
+                };
+            }
+            List<string> formatedPosts = new();
+
+            foreach (var item in postsFromDatabase)
+            {
+                if (item.Links == null)
+                    item.Links = "--";
+
+                if (item.KeyWords == null)
+                    item.KeyWords = "--";
+
+                if (item.ASCII == null)
+                    item.ASCII = "--";
+
+                formatedPosts.Add($"ID: {item.Id}, Likes: {item.Likes}, Content: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt} ,Links: {item.Links}, Keywords: {item.KeyWords}, ASCII: {item.ASCII}");
+            }
+            return new ResponseDto()
+            {
+                Messages = formatedPosts.ToArray(),
+            };
+        }
+        private async Task<ResponseDto> ReadCommentContext(string[] commandParts)
+        {
+            var predicate = CommentDto.CommandReadToDomain(commandParts);
+            var comments = await _commentService
+                            .FindAsync(x =>
+                            x.PostId == predicate.PostId
+                            && (!predicate.DateTime.HasValue || x.CreatedAt == predicate.DateTime.Value)
+                            );
+            if (comments.Count() == 0)
+            {
+                return new ResponseDto()
+                {
+                    Messages = ["No comments were found."]
+                };
+            }
+            List<string> formatedComments = new();
+            foreach (var item in comments)
+            {
+                formatedComments.Add($"PostId: {item.PostId}, Comment: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt}");
+            }
+            return new ResponseDto()
+            {
+                Messages = formatedComments.ToArray(),
+            };
+
+        }
+        private async Task<ResponseDto> ReadCommentByIdContext(string[] commandParts)
+        {
+            var commentIdss = CommentDto.GetCommentIds(commandParts);
+            var commentsReturn = await _commentService.FindAsync(x => commentIdss.Contains(x.CommentId));
+            if (commentsReturn.Count() == 0)
+            {
+                return new ResponseDto()
+                {
+                    Messages = ["No comments were found"]
+                };
+            }
+            List<string> formatedCommentsReturn = new();
+            foreach (var item in commentsReturn)
+            {
+                formatedCommentsReturn.Add($"PostId: {item.PostId}, Comment: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt}");
+            }
+            return new ResponseDto()
+            {
+                Messages = formatedCommentsReturn.ToArray(),
+            };
+        }
+        private async Task<ResponseDto> LikePostContext(string[] commandParts)
+        {
+            if (commandParts.Any(x => x.Contains("...")))
+            {
+                return new ResponseDto()
+                {
+                    Messages = ["The operator ... is not avaiable to likes. Choose specific ids to like."]
+                };
+            }
+            var postsToLike = await _postService.FindAsync(x => PostDto.CommandLikeToId(commandParts).Contains(x.Id));
+            foreach (var item in postsToLike)
+            {
+                item.Likes++;
+            }
+            foreach (var item in postsToLike)
+            {
+                await _postService.UpdateAsync(item);
+            }
+            return new ResponseDto()
+            {
+                Messages = ["Like Added"]
+            };
         }
     }
 }

@@ -119,6 +119,13 @@ namespace OldSchoolAplication
                 return CommandContextEnum.ReadComment;
             }
 
+            if (commandParts[0] == _syntax.ReadCommentById[0]
+                && commandParts[1] == _syntax.ReadCommentById[1]
+                && commandParts[2] == _syntax.ReadCommentById[2])
+            {
+                return CommandContextEnum.ReadCommentById;
+            }
+
             if (commandParts[0] == _syntax.UpdateComment[0]
                 && commandParts[1] == _syntax.UpdateComment[1]
                 && commandParts[2] == _syntax.UpdateComment[2])
