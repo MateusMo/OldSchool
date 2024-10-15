@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OldSchoolInfrastructure.Data;
 
@@ -11,9 +12,11 @@ using OldSchoolInfrastructure.Data;
 namespace OldSchoolInfrastructure.Migrations
 {
     [DbContext(typeof(OldSchoolContext))]
-    partial class OldSchoolContextModelSnapshot : ModelSnapshot
+    [Migration("20241015201923_first")]
+    partial class first
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,37 +59,6 @@ namespace OldSchoolInfrastructure.Migrations
                     b.ToTable("Comments", (string)null);
                 });
 
-            modelBuilder.Entity("OldSchoolDomain.Domain.MindsetDomain", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Likes")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("MindsetDomain");
-                });
-
             modelBuilder.Entity("OldSchoolDomain.Domain.PostDomain", b =>
                 {
                     b.Property<int>("Id")
@@ -94,6 +66,10 @@ namespace OldSchoolInfrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ASCII")
+                        .HasMaxLength(1000)
+                        .HasColumnType("NVARCHAR");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -103,14 +79,16 @@ namespace OldSchoolInfrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("DateTime");
 
+                    b.Property<string>("KeyWords")
+                        .HasMaxLength(100)
+                        .HasColumnType("NVARCHAR");
+
                     b.Property<int>("Likes")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MindsetDomainId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MindsetId")
-                        .HasColumnType("int");
+                    b.Property<string>("Links")
+                        .HasMaxLength(100)
+                        .HasColumnType("NVARCHAR");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("DateTime");
@@ -119,8 +97,6 @@ namespace OldSchoolInfrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MindsetDomainId");
 
                     b.HasIndex("UserId");
 
@@ -174,31 +150,13 @@ namespace OldSchoolInfrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("OldSchoolDomain.Domain.MindsetDomain", b =>
-                {
-                    b.HasOne("OldSchoolDomain.Domain.UserDomain", null)
-                        .WithMany("Mindsets")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("OldSchoolDomain.Domain.PostDomain", b =>
                 {
-                    b.HasOne("OldSchoolDomain.Domain.MindsetDomain", null)
-                        .WithMany("Posts")
-                        .HasForeignKey("MindsetDomainId");
-
                     b.HasOne("OldSchoolDomain.Domain.UserDomain", null)
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("OldSchoolDomain.Domain.MindsetDomain", b =>
-                {
-                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("OldSchoolDomain.Domain.PostDomain", b =>
@@ -209,8 +167,6 @@ namespace OldSchoolInfrastructure.Migrations
             modelBuilder.Entity("OldSchoolDomain.Domain.UserDomain", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("Mindsets");
 
                     b.Navigation("Posts");
                 });

@@ -19,12 +19,14 @@ namespace OldSchoolDomain.Data.Configurations
                 .HasMaxLength(200)
                 .IsRequired();
 
+
             builder.Property(u => u.CreatedAt)
                .IsRequired()
                .HasColumnType("DateTime");
             builder.Property(u => u.UpdatedAt)
                 .IsRequired()
                 .HasColumnType("DateTime");
+
         }
     }
 }

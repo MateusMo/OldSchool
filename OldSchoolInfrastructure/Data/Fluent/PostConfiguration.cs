@@ -18,21 +18,11 @@ namespace OldSchoolDomain.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(300)
                 .HasColumnType("NVARCHAR");
-            builder.Property(p => p.ASCII)
-                .HasMaxLength(1000)
-                .HasColumnType("NVARCHAR")
-                .IsRequired(false); 
-            builder.Property(p => p.KeyWords)
-                .HasMaxLength(100)
-                .HasColumnType("NVARCHAR")
-                .IsRequired(false);
-            builder.Property(p => p.Links)
-                .HasMaxLength(100)
-                .HasColumnType("NVARCHAR")
-                .IsRequired(false);
+
             builder.Property(u => u.CreatedAt)
                 .IsRequired()
                 .HasColumnType("DateTime");
+
             builder.Property(u => u.UpdatedAt)
                 .IsRequired()
                 .HasColumnType("DateTime");
@@ -40,7 +30,7 @@ namespace OldSchoolDomain.Data.Configurations
             builder.HasMany(p => p.Comments)
                    .WithOne()
                    .HasForeignKey(c => c.PostId)
-                   .OnDelete(DeleteBehavior.Cascade); 
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

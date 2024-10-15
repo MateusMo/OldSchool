@@ -12,8 +12,8 @@ using OldSchoolInfrastructure.Data;
 namespace OldSchoolInfrastructure.Migrations
 {
     [DbContext(typeof(OldSchoolContext))]
-    [Migration("20241011202737_first")]
-    partial class first
+    [Migration("20241015213306_refactoring-post")]
+    partial class refactoringpost
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,9 +47,14 @@ namespace OldSchoolInfrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("DateTime");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("CommentId");
 
                     b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Comments", (string)null);
                 });
@@ -62,10 +67,6 @@ namespace OldSchoolInfrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ASCII")
-                        .HasMaxLength(1000)
-                        .HasColumnType("NVARCHAR");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(300)
@@ -74,16 +75,8 @@ namespace OldSchoolInfrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("DateTime");
 
-                    b.Property<string>("KeyWords")
-                        .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR");
-
                     b.Property<int>("Likes")
                         .HasColumnType("int");
-
-                    b.Property<string>("Links")
-                        .HasMaxLength(100)
-                        .HasColumnType("NVARCHAR");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("DateTime");
@@ -137,6 +130,12 @@ namespace OldSchoolInfrastructure.Migrations
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("OldSchoolDomain.Domain.UserDomain", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("OldSchoolDomain.Domain.PostDomain", b =>
@@ -144,7 +143,7 @@ namespace OldSchoolInfrastructure.Migrations
                     b.HasOne("OldSchoolDomain.Domain.UserDomain", null)
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -155,6 +154,8 @@ namespace OldSchoolInfrastructure.Migrations
 
             modelBuilder.Entity("OldSchoolDomain.Domain.UserDomain", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618

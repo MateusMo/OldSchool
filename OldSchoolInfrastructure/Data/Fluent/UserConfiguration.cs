@@ -40,7 +40,17 @@ namespace OldSchoolDomain.Data.Configurations
             builder.HasMany(u => u.Posts)
                    .WithOne()
                    .HasForeignKey(p => p.UserId)
-                   .OnDelete(DeleteBehavior.Cascade); // Exclusão em cascata
+                   .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasMany(u => u.Comments)
+                .WithOne()
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasMany(u => u.Mindsets)
+                .WithOne()
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

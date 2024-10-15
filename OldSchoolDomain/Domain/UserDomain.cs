@@ -9,6 +9,8 @@ namespace OldSchoolDomain.Domain
         public string Nickname { get; set; }
         public string PasswordHash { get; set; }
         public DateTime LastLogin { get; set; }
-        public List<PostDomain> Posts { get; set; } = new List<PostDomain>(); 
+        public List<PostDomain> Posts { get; set; } = new List<PostDomain>();
+        public List<CommentDomain> Comments { get; set; } = new List<CommentDomain>();
+        public List<MindsetDomain> Mindsets { get; set; } = new List<MindsetDomain>();
     }
 }

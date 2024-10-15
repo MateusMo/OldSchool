@@ -10,7 +10,7 @@ namespace OldSchoolAplication.Dto
 {
     public class CommentDto
     {
-        public static List<CommentDomain> CommandAddToDomain(string[] command)
+        public static List<CommentDomain> CommandAddToDomain(string[] command,int userId)
         {
             List<CommentDomain> commentList = new();
             var postIds = command.Skip(5).Select(int.Parse).ToList();
@@ -19,6 +19,7 @@ namespace OldSchoolAplication.Dto
                 commentList.Add(new CommentDomain 
                 { 
                     PostId = item,
+                    UserId = userId,
                     Content = command[3],
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,

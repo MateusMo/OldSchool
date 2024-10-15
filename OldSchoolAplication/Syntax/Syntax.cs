@@ -10,7 +10,7 @@ namespace OldSchoolAplication
     public class Syntax
     {
         public string[] Login { get; set; }
-
+        
         public string[] CreateUser { get; set; }
         public string[] DeleteUser { get; set; }
         public string[] ReadUser { get; set; }
@@ -29,6 +29,12 @@ namespace OldSchoolAplication
         public string[] ReadCommentById { get; set; }
         public string[] UpdateComment { get; set; }
 
+        public string[] CreateMindset { get; set; }
+        public string[] DeleteMindset { get; set; }
+        public string[] ReadMindset { get; set; }
+        public string[] UpdateMindset { get; set; }
+        public string[] LikeMindset { get; set; }
+
 
         public static Syntax GetSyntax()
         {
@@ -45,10 +51,10 @@ namespace OldSchoolAplication
                 UpdateUser = ["UPDATE", "ME", "NICKNAME", "", "PASSWORD", ""],
 
                 //Post basic syntax
-                CreatePost = ["CREATE", "POST", "CONTENT", "", "ASCII", "", "KEYWORDS", "", "LINKS", ""],
+                CreatePost = ["CREATE", "POST", "CONTENT", ""],
                 DeletePost = ["DELETE", "POST", "ID", ""],
                 ReadPost = ["READ", "POST", "ID", ""],
-                UpdatePost = ["UPDATE", "POST", "ID", "", "CONTENT", "", "ASCII", "", "KEYWORDS", "", "LINKS", ""],
+                UpdatePost = ["UPDATE", "POST", "ID", "", "CONTENT", ""],
                 LikePost = ["LIKE", "POST", "ID", ""],
 
                 //Comment basic syntax
@@ -57,6 +63,14 @@ namespace OldSchoolAplication
                 ReadComment = ["READ", "COMMENT", "POST_ID", "", "DATE", "", "TOP", ""],
                 ReadCommentById = ["READ","COMMENT","ID",""],
                 UpdateComment = ["UPDATE", "COMMENT", "ID", "", "CONTENT", ""],
+
+                //Mindset basic syntax
+                CreateMindset = ["CREATE", "MINDSET", "CONTENT", ""],
+                DeleteMindset = ["DELETE", "MINDSET", "ID", ""],
+                ReadMindset = ["READ", "MINDSET", "ID", ""],
+                UpdateMindset = ["UPDATE", "MINDSET", "ID", "", "CONTENT", ""],
+                LikeMindset = ["LIKE", "MINDSET", "ID", ""],
+
             };
 
             return syntax;

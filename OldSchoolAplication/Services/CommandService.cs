@@ -185,6 +185,18 @@ namespace OldSchoolAplication.Services
         private async Task<ResponseDto> DeletepostContext(string[] commandParts)
         {
             var postIds = PostDto.CommandDeleteToDomain(commandParts);
+            var posts = await _postService.FindAsync(x => postIds.Contains(x.Id));
+            foreach (var item in posts)
+            {
+                if(item.UserId != _processDtoService.UserId)
+                {
+                    return new ResponseDto()
+                    {
+                        Messages = ["You can delete only your posts"]
+                    };
+                }
+            }
+
             foreach (var item in postIds)
             {
                 await _postService.DeleteAsync(item);
@@ -241,6 +253,13 @@ namespace OldSchoolAplication.Services
         private async Task<ResponseDto> ReadMeContext(string[] commandParts)
         {
             var readUser = await _userService.GetByIdAsync(_processDtoService.UserId);
+            if(readUser == null)
+            {
+                return new ResponseDto()
+                {
+                    Messages = ["User doesn't exist."]
+                };
+            }
             var posts = await _postService.FindAsync(x => x.UserId == _processDtoService.UserId);
             return new ResponseDto()
             {
@@ -258,7 +277,7 @@ namespace OldSchoolAplication.Services
         }
         private async Task<ResponseDto> CreateCommentContext(string[] commandParts)
         {
-            var newComments = CommentDto.CommandAddToDomain(commandParts);
+            var newComments = CommentDto.CommandAddToDomain(commandParts,_processDtoService.UserId);
             foreach (var item in newComments)
             {
                 await _commentService.AddAsync(item);
@@ -305,16 +324,7 @@ namespace OldSchoolAplication.Services
 
             foreach (var item in postsFromDatabase)
             {
-                if (item.Links == null)
-                    item.Links = "--";
-
-                if (item.KeyWords == null)
-                    item.KeyWords = "--";
-
-                if (item.ASCII == null)
-                    item.ASCII = "--";
-
-                formatedPosts.Add($"ID: {item.Id}, Likes: {item.Likes}, Content: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt} ,Links: {item.Links}, Keywords: {item.KeyWords}, ASCII: {item.ASCII}");
+                formatedPosts.Add($"ID: {item.Id}, UserID: {item.UserId}, Likes: {item.Likes}, Content: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt}");
             }
             return new ResponseDto()
             {
@@ -339,7 +349,7 @@ namespace OldSchoolAplication.Services
             List<string> formatedComments = new();
             foreach (var item in comments)
             {
-                formatedComments.Add($"PostId: {item.PostId}, Comment: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt}");
+                formatedComments.Add($"PostId: {item.PostId}, UserId: {item.UserId} ,Comment: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt}");
             }
             return new ResponseDto()
             {

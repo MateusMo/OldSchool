@@ -19,10 +19,7 @@ namespace OldSchoolAplication.Dto
                 CreatedAt = DateTime.Now,
                 UserId = userId,
                 Content = commands.Length > 3 ? commands[3] : null,
-                ASCII = commands.Length > 5 ? commands[5] : null,
-                KeyWords = commands.Length > 7 ? commands[7] : null,
                 Likes = 0,
-                Links = commands.Length > 9 ? commands[9] : null,
             };
         }
         public static int[] CommandReadToDomain(string[] commands)
@@ -60,9 +57,6 @@ namespace OldSchoolAplication.Dto
         public static PostDomain CommandUpdateToDomain(PostDomain post, string[] commands)
         {
             post.Content = commands[5];
-            post.ASCII = commands.Length >=7 ? commands[6] : post.ASCII;
-            post.KeyWords = commands.Length >= 9 ? commands[8] : post.KeyWords;
-            post.Links = commands.Length >= 11 ? commands[8] : post.Links;
             post.UpdatedAt = DateTime.Now;
             return post;
         }

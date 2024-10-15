@@ -141,6 +141,45 @@ namespace OldSchoolAplication
                 return CommandContextEnum.CurrentUserWantToDeleteHisComment;
             }
 
+            //Mindset
+            if (commandParts[0] == _syntax.CreateMindset[0]
+                && commandParts[1] == _syntax.CreateMindset[1]
+                && commandParts[2] == _syntax.CreateMindset[2]
+                )
+            {
+                return CommandContextEnum.CreateMindset;
+            }
+
+            if (commandParts[0] == _syntax.ReadMindset[0]
+                && commandParts[1] == _syntax.ReadMindset[1]
+                && commandParts[2] == _syntax.ReadMindset[2])
+            {
+                return CommandContextEnum.ReadMindset;
+            }
+
+            if (commandParts[0] == _syntax.DeleteMindset[0]
+                && commandParts[1] == _syntax.DeleteMindset[1]
+                && commandParts[2] == _syntax.DeleteMindset[2]
+                )
+            {
+                return CommandContextEnum.CurrentUserWantToDeleteHisMindset;
+            }
+
+            if (commandParts[0] == _syntax.UpdateMindset[0]
+                && commandParts[1] == _syntax.UpdateMindset[1]
+                && commandParts[2] == _syntax.UpdateMindset[2]
+                && commandParts[4] == _syntax.UpdateMindset[4])
+            {
+                return CommandContextEnum.CurrentUserWantToUpdateMindset;
+            }
+
+            if (commandParts[0] == _syntax.LikeMindset[0]
+                && commandParts[1] == _syntax.LikeMindset[1]
+                && commandParts[2] == _syntax.LikeMindset[2])
+            {
+                return CommandContextEnum.LikeMindset;
+            }
+
             return CommandContextEnum.CommandNotFound;
         }
     }
