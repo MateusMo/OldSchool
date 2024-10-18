@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OldSchoolAplication.Services
 {
-    public interface IMinsetService
+    public interface IMindsetService
     {
         Task<IEnumerable<MindsetDomain>> GetAllAsync();
         Task<MindsetDomain> GetByIdAsync(int id);

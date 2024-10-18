@@ -76,7 +76,8 @@ builder.Services.AddScoped<ICommandService, CommandService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IUserService, UserService>();
-
+builder.Services.AddScoped<IMindsetRepository,MindsetRepository>();
+builder.Services.AddScoped<IMindsetService, MindsetService>();
 
 var app = builder.Build();
 
@@ -91,4 +92,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();  
 app.UseAuthorization();   
 app.MapControllers();
+
 app.Run();
+

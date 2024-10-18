@@ -14,14 +14,16 @@ namespace OldSchoolAplication.Services
         private readonly ICommentService _commentService;
         private readonly IUserService _userService;
         private readonly IPostService _postService;
+        private readonly IMindsetService _mindsetService;
         private readonly IGetToken _getToken;
         private ProcessDtoService _processDtoService;
         private SyntaxTranslator _syntaxTranslator;
-        public CommandService(ICommentService commentService, IUserService userService, IPostService postService, IGetToken getToken)
+        public CommandService(ICommentService commentService, IUserService userService, IPostService postService, IGetToken getToken, IMindsetService mindsetService)
         {
             _commentService = commentService;
             _userService = userService;
             _postService = postService;
+            _mindsetService = mindsetService;
             _getToken = getToken;
             _syntaxTranslator = new SyntaxTranslator();
         }
@@ -87,6 +89,9 @@ namespace OldSchoolAplication.Services
                 case CommandContextEnum.CreatePost:
                     return await CreatePostContext(commandParts);
 
+                case CommandContextEnum.CreatePostWithMindset:
+                    return await CreatePostWithMindsetContext(commandParts);
+
                 case CommandContextEnum.CreateComment:
                     return await CreateCommentContext(commandParts);
 
@@ -105,6 +110,21 @@ namespace OldSchoolAplication.Services
                 case CommandContextEnum.LikePost:
                     return await LikePostContext(commandParts);
 
+                case CommandContextEnum.CreateMindset:
+                    return await CreateMindsetContext(commandParts);
+
+                case CommandContextEnum.ReadMindset:
+                    return await ReadMindsetContext(commandParts);
+
+                case CommandContextEnum.LikeMindset:
+                    return await LikeMindsetContext(commandParts);
+
+                case CommandContextEnum.CurrentUserWantToDeleteHisMindset:
+                    return await DeleteMindsetContext(commandParts);
+
+                case CommandContextEnum.CurrentUserWantToUpdateMindset:
+                    return await UpdateMindsetContext(commandParts);
+
                 case CommandContextEnum.CommandNotFound:
                     return await NotFoundContext();
 
@@ -113,6 +133,7 @@ namespace OldSchoolAplication.Services
             }
         }
 
+        
         private void UpdateProcessDto(ProcessDtoService process)
         {
             _processDtoService = new ProcessDtoService();
@@ -186,6 +207,7 @@ namespace OldSchoolAplication.Services
         {
             var postIds = PostDto.CommandDeleteToDomain(commandParts);
             var posts = await _postService.FindAsync(x => postIds.Contains(x.Id));
+            
             foreach (var item in posts)
             {
                 if(item.UserId != _processDtoService.UserId)
@@ -209,6 +231,18 @@ namespace OldSchoolAplication.Services
         private async Task<ResponseDto> DeleteCommentContext(string[] commandParts)
         {
             var commentIds = CommentDto.CommandDeleteToDomain(commandParts);
+            var comments = await _commentService.FindAsync(x => commentIds.Contains(x.CommentId));
+            foreach (var item in comments)
+            {
+                if(item.UserId != _processDtoService.UserId)
+                {
+                    return new ResponseDto()
+                    {
+                        Messages = ["You can only delete your comments"]
+                    };
+                }
+            }
+
             foreach (var item in commentIds)
             {
                 await _commentService.DeleteAsync(item);
@@ -220,19 +254,34 @@ namespace OldSchoolAplication.Services
         }
         private async Task<ResponseDto> UpdateUserContext(string[] commandParts)
         {
-            var commandIDs = CommentDto.GetCommentId(commandParts);
-            var comment = await _commentService.GetByIdAsync(commandIDs);
-            await _commentService.UpdateAsync(CommentDto.CommandUpdateToDomain(comment, commandParts));
+            var user = await _userService.GetByIdAsync(_processDtoService.UserId);
+            if(user == null)
+            {
+                return new ResponseDto()
+                {
+                    Messages = ["User not found"]
+                };
+            }
+
+            await _userService.UpdateAsync(UserDto.CommandUpdateToDomain(user,commandParts));
             return new ResponseDto()
             {
-                Messages = ["Comment Updated"]
+                Messages = ["User Updated"]
             };
         }
         private async Task<ResponseDto> UpdatePostContext(string[] commandParts)
         {
             var postId = PostDto.GetPostIdToUpdate(commandParts);
             var postToUpdate = await _postService.GetByIdAsync(postId);
-            await _postService
+            if (postToUpdate.UserId != _processDtoService.UserId)
+            {
+                return new ResponseDto()
+                {
+                    Messages = ["You can only update your data"]
+                };
+            }
+
+                await _postService
                .UpdateAsync(PostDto
                .CommandUpdateToDomain(postToUpdate, commandParts));
             return new ResponseDto()
@@ -244,6 +293,13 @@ namespace OldSchoolAplication.Services
         {
             var commandIDs = CommentDto.GetCommentId(commandParts);
             var comment = await _commentService.GetByIdAsync(commandIDs);
+            if (comment.UserId != _processDtoService.UserId)
+            {
+                return new ResponseDto()
+                {
+                    Messages = ["You can only update your comment."]
+                };
+            }
             await _commentService.UpdateAsync(CommentDto.CommandUpdateToDomain(comment, commandParts));
             return new ResponseDto()
             {
@@ -275,6 +331,15 @@ namespace OldSchoolAplication.Services
                 Messages = [$"Post Successfully Created. Id: {post.Id}"]
             };
         }
+        private async Task<ResponseDto> CreatePostWithMindsetContext(string[] commandParts)
+        {
+            var post = await _postService.AddAsync(PostDto.CommandAddToDomainWithMindset(commandParts, _processDtoService.UserId));
+            return new ResponseDto()
+            {
+                Messages = [$"Post Successfully Created. Id: {post.Id}"]
+            };
+        }
+
         private async Task<ResponseDto> CreateCommentContext(string[] commandParts)
         {
             var newComments = CommentDto.CommandAddToDomain(commandParts,_processDtoService.UserId);
@@ -324,7 +389,7 @@ namespace OldSchoolAplication.Services
 
             foreach (var item in postsFromDatabase)
             {
-                formatedPosts.Add($"ID: {item.Id}, UserID: {item.UserId}, Likes: {item.Likes}, Content: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt}");
+                formatedPosts.Add($"ID: {item.Id}, UserID: {item.UserId}, Likes: {item.Likes}, Mindset: {item.MindsetId} ,Content: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt}");
             }
             return new ResponseDto()
             {
@@ -349,7 +414,7 @@ namespace OldSchoolAplication.Services
             List<string> formatedComments = new();
             foreach (var item in comments)
             {
-                formatedComments.Add($"PostId: {item.PostId}, UserId: {item.UserId} ,Comment: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt}");
+                formatedComments.Add($"CommentId: {item.CommentId}, PostId: {item.PostId}, UserId: {item.UserId} ,Comment: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt}");
             }
             return new ResponseDto()
             {
@@ -371,7 +436,7 @@ namespace OldSchoolAplication.Services
             List<string> formatedCommentsReturn = new();
             foreach (var item in commentsReturn)
             {
-                formatedCommentsReturn.Add($"PostId: {item.PostId}, Comment: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt}");
+                formatedCommentsReturn.Add($"CommentId: {item.CommentId}, PostId: {item.PostId}, Comment: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt}");
             }
             return new ResponseDto()
             {
@@ -399,6 +464,101 @@ namespace OldSchoolAplication.Services
             return new ResponseDto()
             {
                 Messages = ["Like Added"]
+            };
+        }
+
+        private async Task<ResponseDto> CreateMindsetContext(string[] commandParts)
+        {
+            var mindset = MindsetDtoService.CommandAddToDomain(commandParts, _processDtoService.UserId);
+            var mindsetAdded = await _mindsetService.AddAsync(mindset);
+            return new ResponseDto()
+            {
+                Messages = [$"Mindset Added. Id: {mindsetAdded.Id}"]
+            };
+        }
+
+        private async Task<ResponseDto> ReadMindsetContext(string[] commandParts)
+        {
+            var ids = MindsetDtoService.CommandReadToDomain(commandParts);
+            var mindsets = await _mindsetService.FindAsync(x => ids.Contains(x.Id));
+            if (mindsets.Count() == 0)
+            {
+                return new ResponseDto()
+                {
+                    Messages = ["No mindsets were found"]
+                };
+            }
+            List<string> formatedMindsets = new();
+            foreach (var item in mindsets)
+            {
+                formatedMindsets.Add($"ID: {item.Id}, UserID: {item.UserId}, Likes: {item.Likes}, Content: {item.Content}, CreatedAt: {item.CreatedAt}, UpdatedAt: {item.UpdatedAt}");
+            }
+            return new ResponseDto()
+            {
+                Messages = formatedMindsets.ToArray(),
+            };
+        }
+
+        private async Task<ResponseDto> LikeMindsetContext(string[] commandParts)
+        {
+            if (commandParts.Any(x => x.Contains("...")))
+            {
+                return new ResponseDto()
+                {
+                    Messages = ["The operator ... is not avaiable to likes. Choose specific ids to like."]
+                };
+            }
+            var postsToLike = await _mindsetService.FindAsync(x => MindsetDtoService.CommandLikeToId(commandParts).Contains(x.Id));
+            foreach (var item in postsToLike)
+            {
+                item.Likes++;
+            }
+            foreach (var item in postsToLike)
+            {
+                await _mindsetService.UpdateAsync(item);
+            }
+            return new ResponseDto()
+            {
+                Messages = ["Like Added"]
+            };
+        }
+
+        private async Task<ResponseDto> DeleteMindsetContext(string[] commandParts)
+        {
+            var mindsetIds = MindsetDtoService.CommandDeleteToDomain(commandParts);
+            var mindsets = await _mindsetService.FindAsync(x => mindsetIds.Contains(x.Id));
+            foreach (var item in mindsets)
+            {
+                if (item.UserId != _processDtoService.UserId)
+                {
+                    return new ResponseDto()
+                    {
+                        Messages = ["You can delete only your posts"]
+                    };
+                }
+            }
+
+            foreach (var item in mindsetIds)
+            {
+                await _postService.DeleteAsync(item);
+            }
+            return new ResponseDto()
+            {
+                Messages = ["Mindset Successfully Deleted"]
+            };
+        }
+
+
+        private async Task<ResponseDto> UpdateMindsetContext(string[] commandParts)
+        {
+            var mindsetId = MindsetDtoService.GetPostIdToUpdate(commandParts);
+            var mindsetToUpdate = await _postService.GetByIdAsync(mindsetId);
+            await _postService
+               .UpdateAsync(PostDto
+               .CommandUpdateToDomain(mindsetToUpdate, commandParts));
+            return new ResponseDto()
+            {
+                Messages = ["Mindset Successfully Updated."]
             };
         }
     }

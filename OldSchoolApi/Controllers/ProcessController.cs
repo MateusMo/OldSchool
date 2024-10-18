@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OldSchoolApi.DTO;
 using OldSchoolAplication.Services;
@@ -15,6 +16,7 @@ namespace OldSchoolApi.Controllers
         {
             _commandService = commandService;
         }
+
 
         [HttpPost("anonymous"), AllowAnonymous]
         public async Task<IActionResult> AnonymousCommands([FromBody] CommandDto anonymous)

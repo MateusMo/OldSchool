@@ -19,6 +19,10 @@ namespace OldSchoolDomain.Data.Configurations
                 .HasMaxLength(300)
                 .HasColumnType("NVARCHAR");
 
+            builder.Property(p => p.MindsetId)
+                .IsRequired()
+                .HasColumnType("int");
+
             builder.Property(u => u.CreatedAt)
                 .IsRequired()
                 .HasColumnType("DateTime");

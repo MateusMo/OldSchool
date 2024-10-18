@@ -25,7 +25,7 @@ namespace OldSchoolInfrastructure.Data.Fluent
 
             builder.Property(c => c.Likes)
                 .HasColumnType("INT")
-                .IsRequired(false);
+                .IsRequired();
 
             builder.Property(c => c.Content)
                 .HasColumnType("NVARCHAR")

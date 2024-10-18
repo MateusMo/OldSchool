@@ -23,6 +23,7 @@ namespace OldSchoolAplication.Enum
 
         CreateUser = 11,
         CreatePost = 12,
+        CreatePostWithMindset = 23,
         CreateComment = 13,
         CreateMindset = 14,
         

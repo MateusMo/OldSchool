@@ -12,8 +12,8 @@ using OldSchoolInfrastructure.Data;
 namespace OldSchoolInfrastructure.Migrations
 {
     [DbContext(typeof(OldSchoolContext))]
-    [Migration("20241015213306_refactoring-post")]
-    partial class refactoringpost
+    [Migration("20241018023026_user-seed")]
+    partial class userseed
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,6 +59,38 @@ namespace OldSchoolInfrastructure.Migrations
                     b.ToTable("Comments", (string)null);
                 });
 
+            modelBuilder.Entity("OldSchoolDomain.Domain.MindsetDomain", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("NVARCHAR");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("DateTime");
+
+                    b.Property<int>("Likes")
+                        .HasColumnType("INT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("DateTime");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Mindset", (string)null);
+                });
+
             modelBuilder.Entity("OldSchoolDomain.Domain.PostDomain", b =>
                 {
                     b.Property<int>("Id")
@@ -78,6 +110,9 @@ namespace OldSchoolInfrastructure.Migrations
                     b.Property<int>("Likes")
                         .HasColumnType("int");
 
+                    b.Property<int>("MindsetId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("DateTime");
 
@@ -85,6 +120,8 @@ namespace OldSchoolInfrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MindsetId");
 
                     b.HasIndex("UserId");
 
@@ -138,13 +175,33 @@ namespace OldSchoolInfrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("OldSchoolDomain.Domain.MindsetDomain", b =>
+                {
+                    b.HasOne("OldSchoolDomain.Domain.UserDomain", null)
+                        .WithMany("Mindsets")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("OldSchoolDomain.Domain.PostDomain", b =>
                 {
+                    b.HasOne("OldSchoolDomain.Domain.MindsetDomain", null)
+                        .WithMany("Posts")
+                        .HasForeignKey("MindsetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("OldSchoolDomain.Domain.UserDomain", null)
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("OldSchoolDomain.Domain.MindsetDomain", b =>
+                {
+                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("OldSchoolDomain.Domain.PostDomain", b =>
@@ -155,6 +212,8 @@ namespace OldSchoolInfrastructure.Migrations
             modelBuilder.Entity("OldSchoolDomain.Domain.UserDomain", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Mindsets");
 
                     b.Navigation("Posts");
                 });

@@ -66,25 +66,26 @@ namespace OldSchoolInfrastructure.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("NVARCHAR");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("DateTime");
 
                     b.Property<int>("Likes")
-                        .HasColumnType("int");
+                        .HasColumnType("INT");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("DateTime");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("INT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("MindsetDomain");
+                    b.ToTable("Mindset", (string)null);
                 });
 
             modelBuilder.Entity("OldSchoolDomain.Domain.PostDomain", b =>
@@ -106,9 +107,6 @@ namespace OldSchoolInfrastructure.Migrations
                     b.Property<int>("Likes")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MindsetDomainId")
-                        .HasColumnType("int");
-
                     b.Property<int>("MindsetId")
                         .HasColumnType("int");
 
@@ -120,7 +118,7 @@ namespace OldSchoolInfrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MindsetDomainId");
+                    b.HasIndex("MindsetId");
 
                     b.HasIndex("UserId");
 
@@ -187,7 +185,9 @@ namespace OldSchoolInfrastructure.Migrations
                 {
                     b.HasOne("OldSchoolDomain.Domain.MindsetDomain", null)
                         .WithMany("Posts")
-                        .HasForeignKey("MindsetDomainId");
+                        .HasForeignKey("MindsetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("OldSchoolDomain.Domain.UserDomain", null)
                         .WithMany("Posts")

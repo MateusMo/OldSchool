@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace OldSchoolAplication.Services
 {
-    public class MinsetService : IMinsetService
+    public class MindsetService : IMindsetService
     {
         private readonly IMindsetRepository _minsetRepo;
-        public MinsetService(IMindsetRepository minsetRepo)
+        public MindsetService(IMindsetRepository minsetRepo)
         {
             _minsetRepo = minsetRepo;
         }

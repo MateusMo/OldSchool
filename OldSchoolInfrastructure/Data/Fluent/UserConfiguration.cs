@@ -51,6 +51,7 @@ namespace OldSchoolDomain.Data.Configurations
                 .WithOne()
                 .HasForeignKey(p => p.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
+
         }
     }
 }

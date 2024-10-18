@@ -64,6 +64,16 @@ namespace OldSchoolAplication
             }
 
             //Post
+            //Post com mindset precisa ser verificado antes
+            if (commandParts[0] == _syntax.CreatePostWithMindset[0]
+                && commandParts[1] == _syntax.CreatePostWithMindset[1]
+                && commandParts[2] == _syntax.CreatePostWithMindset[2]
+                && commandParts[4] == _syntax.CreatePostWithMindset[4]
+                )
+            {
+                return CommandContextEnum.CreatePostWithMindset;
+            }
+
             if (commandParts[0] == _syntax.CreatePost[0]
                 && commandParts[1] == _syntax.CreatePost[1]
                 && commandParts[2] == _syntax.CreatePost[2]
@@ -72,6 +82,7 @@ namespace OldSchoolAplication
                 return CommandContextEnum.CreatePost;
             }
 
+            
             if (commandParts[0] == _syntax.ReadPost[0]
                 && commandParts[1] == _syntax.ReadPost[1]
                 && commandParts[2] == _syntax.ReadPost[2])

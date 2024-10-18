@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OldSchoolInfrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class first : Migration
+    public partial class userseed : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,16 +29,36 @@ namespace OldSchoolInfrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Mindset",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "INT", nullable: false),
+                    Likes = table.Column<int>(type: "INT", nullable: false),
+                    Content = table.Column<string>(type: "NVARCHAR(200)", maxLength: 200, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "DateTime", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Mindset", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Mindset_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Posts",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
+                    MindsetId = table.Column<int>(type: "int", nullable: false),
                     Content = table.Column<string>(type: "NVARCHAR(300)", maxLength: 300, nullable: false),
-                    ASCII = table.Column<string>(type: "NVARCHAR(1000)", maxLength: 1000, nullable: true),
-                    KeyWords = table.Column<string>(type: "NVARCHAR(100)", maxLength: 100, nullable: true),
-                    Links = table.Column<string>(type: "NVARCHAR(100)", maxLength: 100, nullable: true),
                     Likes = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "DateTime", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "DateTime", nullable: false)
@@ -46,6 +66,12 @@ namespace OldSchoolInfrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Posts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Posts_Mindset_MindsetId",
+                        column: x => x.MindsetId,
+                        principalTable: "Mindset",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Posts_Users_UserId",
                         column: x => x.UserId,
@@ -92,6 +118,16 @@ namespace OldSchoolInfrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Mindset_UserId",
+                table: "Mindset",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_MindsetId",
+                table: "Posts",
+                column: "MindsetId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Posts_UserId",
                 table: "Posts",
                 column: "UserId");
@@ -105,6 +141,9 @@ namespace OldSchoolInfrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Posts");
+
+            migrationBuilder.DropTable(
+                name: "Mindset");
 
             migrationBuilder.DropTable(
                 name: "Users");

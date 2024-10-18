@@ -1,38 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
-using OldSchoolDomain.Domain;
+﻿using OldSchoolDomain.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace OldSchoolAplication.Dto
 {
-    public class PostDto
+    public class MindsetDtoService
     {
-        public static PostDomain CommandAddToDomain(string[] commands, int userId)
+        public static MindsetDomain CommandAddToDomain(string[] commands, int userId)
         {
-            return new PostDomain()
-            {
-                UpdatedAt = DateTime.Now,
-                CreatedAt = DateTime.Now,
-                UserId = userId,
-                MindsetId = 1,
-                Content = commands.Length > 3 ? commands[3] : null,
-                Likes = 0,
-            };
-        }
-
-        public static PostDomain CommandAddToDomainWithMindset(string[] commands, int userId)
-        {
-            return new PostDomain()
+            return new MindsetDomain()
             {
                 UpdatedAt = DateTime.Now,
                 CreatedAt = DateTime.Now,
                 UserId = userId,
                 Content = commands.Length > 3 ? commands[3] : null,
-                MindsetId = int.Parse(commands.Length > 4 ? commands[5] : null),
                 Likes = 0,
             };
         }
@@ -68,13 +52,13 @@ namespace OldSchoolAplication.Dto
             return int.Parse(commands[3]);
         }
 
-        public static PostDomain CommandUpdateToDomain(PostDomain post, string[] commands)
+        public static MindsetDomain CommandUpdateToDomain(MindsetDomain post, string[] commands)
         {
             post.Content = commands[5];
             post.UpdatedAt = DateTime.Now;
             return post;
         }
-        public static int[] CommandDeleteToDomain(string[]commands)
+        public static int[] CommandDeleteToDomain(string[] commands)
         {
             return commands.Skip(3).Select(int.Parse).ToArray();
         }

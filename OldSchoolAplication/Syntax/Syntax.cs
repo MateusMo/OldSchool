@@ -18,6 +18,8 @@ namespace OldSchoolAplication
         public string[] UpdateUser { get; set; }
 
         public string[] CreatePost { get; set; }
+        public string[] CreatePostWithMindset { get; set; }
+
         public string[] DeletePost { get; set; }
         public string[] ReadPost { get; set; }
         public string[] UpdatePost { get; set; }
@@ -52,6 +54,7 @@ namespace OldSchoolAplication
 
                 //Post basic syntax
                 CreatePost = ["CREATE", "POST", "CONTENT", ""],
+                CreatePostWithMindset = ["CREATE", "POST", "CONTENT", "","MINDSET_ID",""],
                 DeletePost = ["DELETE", "POST", "ID", ""],
                 ReadPost = ["READ", "POST", "ID", ""],
                 UpdatePost = ["UPDATE", "POST", "ID", "", "CONTENT", ""],
